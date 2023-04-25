@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: server
+
+  # Obtain datasource settings from the active profile.
+  datasource:
+    url: ${database.url}
+    username: ${database.username}
+    password: ${database.password}
+
+  profiles:
+    active: local
