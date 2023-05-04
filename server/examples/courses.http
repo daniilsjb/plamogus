@@ -1,0 +1,32 @@
+### Create a course
+POST {{uap-host}}/courses
+Content-Type: application/json
+
+{
+  "code": "DSA",
+  "title": "Data Structures and Algorithms",
+  "description": "Assignments can be completed in any language of choice.",
+  "semester": 3
+}
+
+### Read all courses
+GET {{uap-host}}/courses
+Accept: application/json
+
+### Read one course
+GET {{uap-host}}/courses/{id}
+Accept: application/json
+
+### Update a course
+PUT {{uap-host}}/courses/{id}
+Content-Type: application/json
+
+{
+  "code": "DSA",
+  "title": "Data Structures and Algorithms",
+  "description": "Assignments can be completed in any language of choice.",
+  "semester": 3
+}
+
+### Delete a course
+DELETE {{uap-host}}/courses/{id}

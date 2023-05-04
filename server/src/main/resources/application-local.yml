@@ -2,3 +2,8 @@ database:
   url: 'jdbc:postgresql://localhost:5432/uap'
   username: 'uap_user'
   password: 'uap_user'
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

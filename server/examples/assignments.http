@@ -1,0 +1,40 @@
+### Create a new assignment
+POST {{uap-host}}/assignments
+Content-Type: application/json
+
+{
+  "title": "Programming Lab #3",
+  "description": "The report should be submitted in Markdown.",
+  "deadlineTime": "2023-12-31T00:00:00.000000000Z",
+  "type": "LAB",
+  "courseId": null
+}
+
+### Read all assignments
+GET {{uap-host}}/assignments
+Accept: application/json
+
+### Read one assignment
+GET {{uap-host}}/assignments/{id}
+Accept: application/json
+
+### Update an assignment
+PUT {{uap-host}}/assignments/{id}
+Content-Type: application/json
+
+{
+  "title": "Programming Lab #3",
+  "description": "The report should be submitted in Markdown.",
+  "deadlineTime": "2023-12-31T00:00:00.000000000Z",
+  "type": "LAB",
+  "courseId": null
+}
+
+### Delete an assignment
+DELETE {{uap-host}}/assignments/{id}
+
+### Mark an assignment as completed
+PUT {{uap-host}}/assignments/{id}/completion
+
+### Mark an assignment as not completed
+DELETE {{uap-host}}/assignments/{id}/completion

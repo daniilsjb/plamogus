@@ -1,0 +1,28 @@
+### Append a step to an assignment
+POST {{uap-host}}/assignments/{id}/steps
+Content-Type: application/json
+
+{
+  "title": "Prepare a report from the provided template."
+}
+
+### Read all steps of an assignment
+GET {{uap-host}}/assignments/{id}/steps
+Accept: application/json
+
+### Update a step of an assignment
+PUT {{uap-host}}/assignments/{id}/steps/{index}
+Content-Type: application/json
+
+{
+  "title": "Prepare a report from the provided template."
+}
+
+### Delete a step from an assignment
+DELETE {{uap-host}}/assignments/{id}/steps/{index}
+
+### Mark a step of an assignment as completed
+PUT {{uap-host}}/assignments/{id}/steps/{index}/completion
+
+### Mark a step of an assignment as not completed
+DELETE {{uap-host}}/assignments/{id}/steps/{index}/completion
