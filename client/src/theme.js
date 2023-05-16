@@ -21,6 +21,13 @@ export const useColorMode = () => {
 
   const theme = useMemo(() => createTheme({
     palette: { mode },
+    components: {
+      MuiTextField: {
+        defaultProps: {
+          variant: 'filled',
+        },
+      },
+    },
     width: {
       navigationDrawer: 290,
       detailsDrawer: 360,
