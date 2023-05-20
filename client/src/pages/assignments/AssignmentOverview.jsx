@@ -326,7 +326,7 @@ const AssignmentContent = ({ data, selected, handleCreate, handleSelect }) => {
   return <>
     <ActionBar handleCreate={handleCreate}/>
 
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'auto' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2, overflow: 'auto' }}>
       {(pending.length !== 0) && <AssignmentGroup
         title="Pending"
         assignments={pending}

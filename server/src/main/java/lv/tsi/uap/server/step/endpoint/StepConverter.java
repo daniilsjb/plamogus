@@ -15,6 +15,7 @@ class StepConverter {
 
     public StepResponse toResponse(@NonNull Step entity) {
         return StepResponse.builder()
+            .id(entity.getId())
             .title(entity.getTitle())
             .completed(entity.getCompleted())
             .build();

@@ -7,6 +7,7 @@ import lombok.Value;
 @Builder
 class StepResponse {
 
+    Long id;
     String title;
     Boolean completed;
 
