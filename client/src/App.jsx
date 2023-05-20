@@ -5,12 +5,14 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Dashboard from './pages/dashboard/Dashboard';
-import Assignments from './pages/assignments/Assignments';
+import Assignments from './pages/assignments/Index';
 import Courses from './pages/courses/Courses';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import { ColorModeContext, useColorMode } from './theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
   ({ theme, sidebarOpen }) => {
@@ -51,18 +53,20 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Header setSidebarOpen={setSidebarOpen}/>
-            <Main sx={{ display: 'flex', flex: 1, minHeight: 0, p: 3 }} sidebarOpen={sidebarOpen}>
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard/>}></Route>
-                <Route path="/assignments" element={<Assignments/>}></Route>
-                <Route path="/courses" element={<Courses/>}></Route>
-              </Routes>
-            </Main>
-          </Box>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <CssBaseline/>
+            <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Header setSidebarOpen={setSidebarOpen}/>
+              <Main sx={{ display: 'flex', flex: 1, minHeight: 0, p: 3 }} sidebarOpen={sidebarOpen}>
+                <Routes>
+                  <Route path="/dashboard" element={<Dashboard/>}></Route>
+                  <Route path="/assignments" element={<Assignments/>}></Route>
+                  <Route path="/courses" element={<Courses/>}></Route>
+                </Routes>
+              </Main>
+            </Box>
+          </LocalizationProvider>
         </ThemeProvider>
       </ColorModeContext.Provider>
     </QueryClientProvider>

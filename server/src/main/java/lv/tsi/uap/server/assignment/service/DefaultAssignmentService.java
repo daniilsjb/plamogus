@@ -55,8 +55,14 @@ class DefaultAssignmentService implements AssignmentService {
 
         var existingEntity = assignments.findById(entity.getId());
         existingEntity.ifPresentOrElse(
-            it -> entity.setCreationTime(it.getCreationTime()),
-            () -> entity.setCreationTime(Instant.now())
+            it -> {
+                entity.setCreationTime(it.getCreationTime());
+                entity.setCompleted(it.getCompleted());
+            },
+            () -> {
+                entity.setCreationTime(Instant.now());
+                entity.setCompleted(false);
+            }
         );
 
         return assignments.save(entity);

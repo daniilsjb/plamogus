@@ -41,17 +41,7 @@ import { createCourse, deleteCourse, findAllCourses, updateCourse } from '../../
 import CourseSchema from '../../schemas/course';
 import { Icon } from '@mui/material';
 
-const removeNonDigits = (value) => {
-  return value.replace(/\D/g, '');
-};
-
-const removeWhitespace = (value) => {
-  return value.replace(/\s/g, '');
-};
-
-const removeNewlines = (value) => {
-  return value.replace(/\n/g, '');
-};
+import { removeNewlines, removeWhitespace, removeNonDigits } from '../../common/string';
 
 const CourseCreate = ({ close }) => {
   const queryClient = useQueryClient();
@@ -73,6 +63,7 @@ const CourseCreate = ({ close }) => {
     try {
       await mutateAsync(values);
     } catch (error) {
+      // TODO: The error handling has to be more specific here.
       if (error?.response.status === 500) {
         formik.setFieldError('code', 'A course with this code already exists.');
       }
@@ -84,7 +75,6 @@ const CourseCreate = ({ close }) => {
       {(formik) => (
         <Form style={{ height: '100%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* COURSE FORM */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1, overflow: 'scroll' }}>
               <Field
                 component={TextField}
@@ -125,7 +115,6 @@ const CourseCreate = ({ close }) => {
               />
             </Box>
 
-            {/* ACTIONS */}
             <Divider/>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
               <Button variant="contained" type="submit" disabled={!(formik.dirty && formik.isValid)}>Save</Button>
@@ -142,9 +131,10 @@ const DeletionDialog = ({ open, setOpen, course, closeDetails }) => {
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: deleteCourse,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['courses'] });
-    },
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['courses'] }),
+      queryClient.invalidateQueries({ queryKey: ['assignments'] }),
+    ]),
   });
 
   const closeSelf = () => {
@@ -186,7 +176,7 @@ const CourseUpdate = ({ close, course }) => {
     },
   });
 
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
 
   const initialValues = {
     code: course.code || '',
@@ -199,6 +189,7 @@ const CourseUpdate = ({ close, course }) => {
     try {
       await mutateAsync({ id: course.id, ...values });
     } catch (error) {
+      // TODO: The error handling has to be more specific here.
       if (error?.response.status === 500) {
         formik.setFieldError('code', 'A course with this code already exists.');
       }
@@ -248,7 +239,6 @@ const CourseUpdate = ({ close, course }) => {
             </Box>
 
             <Divider/>
-
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
               <Tooltip title="Hide Sidebar">
                 <IconButton onClick={close}>
@@ -256,13 +246,16 @@ const CourseUpdate = ({ close, course }) => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Delete">
-                <IconButton onClick={() => setDialogOpen(true)}>
+                <IconButton onClick={() => setDeletionDialogOpen(true)}>
                   <DeleteOutlineOutlinedIcon/>
                 </IconButton>
               </Tooltip>
               <DeletionDialog
-                keepMounted open={dialogOpen} setOpen={setDialogOpen} course={course}
+                open={deletionDialogOpen}
+                setOpen={setDeletionDialogOpen}
                 closeDetails={close}
+                course={course}
+                keepMounted
               />
             </Box>
           </Box>
@@ -389,8 +382,10 @@ const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, set
         <Typography variant="body2" sx={{ mt: 1 }}>Would you like to create one now?</Typography>
         <Button variant="outlined" sx={{ mt: 2 }} onClick={openCreatePane}>New</Button>
       </Box> : <>
-        <Box sx={{ display: 'flex', gap: 3 }}>
-          <Button variant="contained" onClick={openCreatePane}>New</Button>
+        <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+          <Tooltip title="Create Course">
+            <Button variant="contained" onClick={openCreatePane}>New</Button>
+          </Tooltip>
           <Paper
             component="form"
             sx={{ p: '2px 4px', display: 'flex', flex: 1, alignItems: 'center' }}

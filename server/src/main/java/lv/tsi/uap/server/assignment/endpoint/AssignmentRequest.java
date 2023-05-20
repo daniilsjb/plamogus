@@ -23,7 +23,6 @@ class AssignmentRequest {
     @Size(max = 512, message = "Attribute 'description' cannot exceed 512 characters.")
     String description;
 
-    @Future(message = "Attribute 'deadlineTime' must be set to a future timestamp.")
     Instant deadlineTime;
 
     AssignmentType type;
