@@ -357,7 +357,7 @@ const AssignmentGroup = ({ title, assignments, selected, handleSelect }) => {
       <Typography>{title}</Typography>
       <Typography
         variant="body2"
-        sx={{ ml: 1, color: theme => theme.palette.grey[500] }}
+        sx={{ ml: 1, color: 'text.secondary' }}
       >
         {assignments.length}
       </Typography>

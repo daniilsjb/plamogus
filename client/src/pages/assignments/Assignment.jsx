@@ -32,7 +32,7 @@ const TypeChip = ({ assignment: { type, completed } }) => {
       size="small"
       icon={<HistoryEduIcon/>}
       label={ASSIGNMENT_TYPES.find(it => it.value === type).label}
-      sx={{ color: theme => completed && theme.palette.grey[500] }}
+      sx={{ color: completed && 'text.secondary' }}
     />
   );
 };
@@ -42,7 +42,7 @@ const DeadlineChip = ({ assignment: { deadlineTime, completed } }) => {
   const overdue = !!deadlineTime && dayjs(deadlineTime).isBefore(today);
 
   const calendarIcon = (overdue && !completed)
-    ? <EventBusyIcon sx={{ '&&': { color: theme => theme.palette.error.main } }}/>
+    ? <EventBusyIcon sx={{ '&&': { color: 'error.main' } }}/>
     : <CalendarMonthIcon/>;
 
   return (
@@ -51,7 +51,7 @@ const DeadlineChip = ({ assignment: { deadlineTime, completed } }) => {
       icon={calendarIcon}
       label={utcToLocalDate(deadlineTime)}
       sx={{
-        color: theme => (completed && theme.palette.grey[500]) || (overdue && theme.palette.error.main),
+        color: (completed && 'text.secondary') || (overdue && 'error.main'),
       }}
     />
   );
@@ -63,7 +63,7 @@ const CourseChip = ({ assignment: { course, completed } }) => {
       size="small"
       icon={<SchoolIcon/>}
       label={course.code}
-      sx={{ color: theme => completed && theme.palette.grey[500] }}
+      sx={{ color: completed && 'text.secondary' }}
     />
   );
 };
@@ -112,8 +112,7 @@ const Assignment = ({ assignment, selected, handleSelect }) => {
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Typography sx={{
-              color: theme => assignment.completed && theme.palette.grey[500],
-              textDecoration: assignment.completed && 'line-through',
+              color: assignment.completed && 'text.secondary',
               wordBreak: 'break-word',
             }}>
               {assignment.title}

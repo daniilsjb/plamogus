@@ -58,7 +58,7 @@ const App = () => {
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               <Header setSidebarOpen={setSidebarOpen}/>
-              <Main sx={{ display: 'flex', flex: 1, minHeight: 0, p: 3 }} sidebarOpen={sidebarOpen}>
+              <Main sx={{ display: 'flex', flex: 1, minHeight: 0, p: { xs: 1, sm: 2, md: 3 }, justifyContent: 'center', overflow: 'auto' }} sidebarOpen={sidebarOpen}>
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard/>}></Route>
                   <Route path="/assignments" element={<Assignments/>}></Route>
