@@ -1,6 +1,5 @@
 package lv.tsi.uap.server.assignment.endpoint;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;

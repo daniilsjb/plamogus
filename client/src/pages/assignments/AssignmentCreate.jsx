@@ -27,7 +27,7 @@ const AssignmentCreate = ({ close }) => {
   });
 
   const { status, data } = useQuery({
-    queryKey: ['courses'], queryFn: findAllCourses,
+    queryKey: ['courses'], queryFn: () => findAllCourses({}),
   });
 
   const initialValues = {

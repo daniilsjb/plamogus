@@ -28,6 +28,7 @@ import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import ArrowUpwardOutlinedIcon from '@mui/icons-material/ArrowUpwardOutlined';
 import ArrowDownwardOutlinedIcon from '@mui/icons-material/ArrowDownwardOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 import Assignment from './Assignment';
 
@@ -35,6 +36,7 @@ import { findAllCourses } from '../../services/course';
 import { findAllAssignments } from '../../services/assignment';
 import { partition } from '../../common/functional';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
+import Chip from '@mui/material/Chip';
 
 const ResponsiveIconButtonStyled = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'breakpoint',
@@ -54,6 +56,29 @@ const ResponsiveIconButtonStyled = styled(Button, {
     },
   },
 }));
+
+const FILTERING_OPTIONS = [
+  {
+    label: 'Title',
+    value: 'title',
+    Icon: TitleOutlinedIcon,
+  },
+  {
+    label: 'Type',
+    value: 'type',
+    Icon: HistoryEduOutlinedIcon,
+  },
+  {
+    label: 'Deadline Date',
+    value: 'deadlineTime',
+    Icon: CalendarMonthOutlinedIcon,
+  },
+  {
+    label: 'Creation Date',
+    value: 'creationTime',
+    Icon: TodayOutlinedIcon,
+  },
+];
 
 const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'detailsOpen' })(
   ({ theme, detailsOpen }) => {
@@ -85,28 +110,42 @@ const NewButton = ({ onClick }) => {
   );
 };
 
-const SearchBar = () => {
+const SearchBar = ({ criterion, setCriterion }) => {
+  const [searchValue, setSearchValue] = useState(null);
+
+  const handleSearch = () => {
+    setCriterion(searchValue);
+  };
+
   return (
     <Paper
       component="form"
       sx={{ p: '2px 4px', display: 'flex', flex: 1, alignItems: 'center' }}
     >
-      <IconButton sx={{ p: '10px' }}>
+      <IconButton sx={{ p: '10px' }} onClick={handleSearch}>
         <SearchIcon/>
       </IconButton>
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder="Search"
+        onChange={(event) => setSearchValue(event.target.value)}
+        onBlur={handleSearch}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            handleSearch();
+          }
+        }}
       />
     </Paper>
   );
 };
 
-const SortButton = () => {
+const SortButton = ({
+  sortingCriterion, setSortingCriterion,
+  sortingDirection, setSortingDirection,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [sortingCriterion, setSortingCriterion] = useState(null);
-  const [sortingDirection, setSortingDirection] = useState('asc');
-
   const open = !!anchorEl;
 
   const handleCriterionClicked = (criterion) => {
@@ -119,29 +158,6 @@ const SortButton = () => {
     setAnchorEl(null);
   };
 
-  const options = [
-    {
-      label: 'Title',
-      value: 'title',
-      Icon: TitleOutlinedIcon,
-    },
-    {
-      label: 'Type',
-      value: 'type',
-      Icon: HistoryEduOutlinedIcon,
-    },
-    {
-      label: 'Deadline Date',
-      value: 'deadlineDate',
-      Icon: CalendarMonthOutlinedIcon,
-    },
-    {
-      label: 'Creation Date',
-      value: 'creationDate',
-      Icon: TodayOutlinedIcon,
-    },
-  ];
-
   return (
     <div>
       <Tooltip title="Change Ordering">
@@ -152,9 +168,9 @@ const SortButton = () => {
         </ResponsiveIconButtonStyled>
       </Tooltip>
 
-      <Menu anchorEl={anchorEl} open={open} onClose={handleCriterionClicked}>
+      <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
         {/* SORTING CRITERIA */}
-        {options.map(({ label, value, Icon }) => (
+        {FILTERING_OPTIONS.map(({ label, value, Icon }) => (
           <MenuItem key={label} selected={value === sortingCriterion} onClick={() => handleCriterionClicked(value)}>
             <ListItemIcon>
               <Icon fontSize="small"/>
@@ -184,10 +200,8 @@ const SortButton = () => {
   );
 };
 
-const FilterByTypeButton = () => {
+const FilterByTypeButton = ({ criterion, setCriterion }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [criterion, setCriterion] = useState(null);
-
   const open = !!anchorEl;
 
   const handleCriterionClicked = (criterion) => {
@@ -205,7 +219,7 @@ const FilterByTypeButton = () => {
         </ResponsiveIconButtonStyled>
       </Tooltip>
 
-      <Menu anchorEl={anchorEl} open={open} onClose={handleCriterionClicked}>
+      <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
         {/* FILTERING CRITERIA */}
         {ASSIGNMENT_TYPES.map(({ label, value }) => (
           <MenuItem key={label} selected={value === criterion} onClick={() => handleCriterionClicked(value)}>
@@ -217,14 +231,12 @@ const FilterByTypeButton = () => {
   );
 };
 
-const FilterByCourseButton = () => {
+const FilterByCourseButton = ({ criterion, setCriterion }) => {
   const { status, data } = useQuery({
-    queryKey: ['courses'], queryFn: findAllCourses,
+    queryKey: ['courses'], queryFn: () => findAllCourses({}),
   });
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [criterion, setCriterion] = useState(null);
-
   const open = !!anchorEl;
 
   const handleCriterionClicked = (criterion) => {
@@ -242,7 +254,7 @@ const FilterByCourseButton = () => {
   }
 
   const options = data.map(course => ({
-    label: course.code, value: course.id,
+    label: course.code, value: course.code,
   }));
 
   return (
@@ -255,7 +267,7 @@ const FilterByCourseButton = () => {
         </ResponsiveIconButtonStyled>
       </Tooltip>
 
-      <Menu anchorEl={anchorEl} open={open} onClose={handleCriterionClicked}>
+      <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
         {/* FILTERING CRITERIA */}
         {options.map(({ label, value }) => (
           <MenuItem key={label} selected={value === criterion} onClick={() => handleCriterionClicked(value)}>
@@ -267,15 +279,74 @@ const FilterByCourseButton = () => {
   );
 };
 
-const ActionBar = ({ handleCreate }) => {
+const ActionBar = ({
+  handleCreate,
+  sortingCriterion, setSortingCriterion,
+  sortingDirection, setSortingDirection,
+  typeCriterion, setTypeCriterion,
+  titleCriterion, setTitleCriterion,
+  courseCriterion, setCourseCriterion,
+}) => {
+  const isSortingApplied = !!sortingCriterion;
+  const isFilteringApplied = !!typeCriterion || !!courseCriterion;
+
   return (
     // TODO: Shrink spacing between items on smaller screens.
-    <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-      <NewButton onClick={handleCreate}/>
-      <SearchBar/>
-      <SortButton/>
-      <FilterByTypeButton/>
-      <FilterByCourseButton/>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+        <NewButton onClick={handleCreate}/>
+        <SearchBar
+          criterion={titleCriterion}
+          setCriterion={setTitleCriterion}
+        />
+        <SortButton
+          sortingCriterion={sortingCriterion}
+          setSortingCriterion={setSortingCriterion}
+          sortingDirection={sortingDirection}
+          setSortingDirection={setSortingDirection}
+        />
+        <FilterByTypeButton
+          criterion={typeCriterion}
+          setCriterion={setTypeCriterion}
+        />
+        <FilterByCourseButton
+          criterion={courseCriterion}
+          setCriterion={setCourseCriterion}
+        />
+      </Box>
+
+      {(isFilteringApplied || isSortingApplied) && (
+        <Box sx={{
+          display: 'flex', gap: 1, justifyContent: 'end', mt: 2, alignItems: 'center', flexWrap: 'wrap',
+        }}>
+          {isFilteringApplied && (<Box sx={{ display: 'flex', gap: 1 }}>
+            <Typography variant="body2">Having</Typography>
+            {!!typeCriterion && (
+              <Chip
+                size="small"
+                icon={<HistoryEduIcon/>}
+                label={ASSIGNMENT_TYPES.find(it => it.value === typeCriterion).label}
+                onDelete={() => setTypeCriterion(null)}/>
+            )}
+            {!!courseCriterion && (
+              <Chip
+                size="small"
+                icon={<SchoolIcon/>}
+                label={courseCriterion}
+                onDelete={() => setCourseCriterion(null)}/>
+            )}
+          </Box>)}
+
+          {isSortingApplied && (<Box sx={{ display: 'flex', gap: 1 }}>
+            <Typography variant="body2">Sorted by</Typography>
+            <Chip
+              size="small"
+              icon={sortingDirection === 'asc' ? <ArrowUpwardOutlinedIcon/> : <ArrowDownwardOutlinedIcon/>}
+              label={FILTERING_OPTIONS.find(it => it.value === sortingCriterion).label}
+              onDelete={() => setSortingCriterion(null)}/>
+          </Box>)}
+        </Box>
+      )}
     </Box>
   );
 };
@@ -320,12 +391,26 @@ const AssignmentEmpty = ({ handleCreate }) => {
   );
 };
 
-const AssignmentContent = ({ data, selected, handleCreate, handleSelect }) => {
+const AssignmentFilterEmpty = () => {
+  return (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+    }}>
+      <Icon component={SearchOffIcon} sx={{ fontSize: '160px', color: 'primary.main' }}></Icon>
+      <Typography variant="h6">No assignments match these criteria.</Typography>
+      <Typography variant="body2" sx={{ mt: 1 }}>Try searching for something else instead.</Typography>
+    </Box>
+  );
+};
+
+const AssignmentContent = ({ data, selected, handleSelect }) => {
   const [completed, pending] = partition(data, it => it.completed);
 
   return <>
-    <ActionBar handleCreate={handleCreate}/>
-
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2, overflow: 'auto' }}>
       {(pending.length !== 0) && <AssignmentGroup
         title="Pending"
@@ -345,8 +430,27 @@ const AssignmentContent = ({ data, selected, handleCreate, handleSelect }) => {
 };
 
 const AssignmentOverview = ({ selectedAction, setSelectedAction, selectedAssignment, setSelectedAssignment }) => {
+  const [searchType, setSearchType] = useState(null);
+  const [searchTitle, setSearchTitle] = useState(null);
+  const [searchCourse, setSearchCourse] = useState(null);
+
+  const [sortingCriterion, setSortingCriterion] = useState(null);
+  const [sortingDirection, setSortingDirection] = useState('asc');
+
+  const isFilterApplied = !!searchType || !!searchTitle || !!searchCourse;
+
+  const params = {
+    type: searchType,
+    title: searchTitle,
+    course: searchCourse,
+    order: sortingDirection,
+    orderBy: sortingCriterion,
+  };
+
   const { status, data } = useQuery({
-    queryKey: ['assignments'], queryFn: findAllAssignments,
+    queryKey: ['assignments', params],
+    queryFn: () => findAllAssignments(params),
+    keepPreviousData: true,
   });
 
   if (status === 'loading') {
@@ -371,18 +475,35 @@ const AssignmentOverview = ({ selectedAction, setSelectedAction, selectedAssignm
   const detailsOpen = !!selectedAction;
   return (
     <Main detailsOpen={detailsOpen} sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 3 }}>
-      {(data.length === 0) ? (
+      {(data.length === 0 && !isFilterApplied) ? (
         <AssignmentEmpty
           handleCreate={handleCreate}
         />
-      ) : (
-        <AssignmentContent
-          data={data}
+      ) : (<>
+        <ActionBar
           handleCreate={handleCreate}
-          handleSelect={handleSelect}
-          selected={selectedAssignment}
+          sortingCriterion={sortingCriterion}
+          setSortingCriterion={setSortingCriterion}
+          sortingDirection={sortingDirection}
+          setSortingDirection={setSortingDirection}
+          typeCriterion={searchType}
+          setTypeCriterion={setSearchType}
+          titleCriterion={searchTitle}
+          setTitleCriterion={setSearchTitle}
+          courseCriterion={searchCourse}
+          setCourseCriterion={setSearchCourse}
         />
-      )}
+
+        {(data.length === 0 && isFilterApplied) ? (
+          <AssignmentFilterEmpty/>
+        ) : (
+          <AssignmentContent
+            data={data}
+            handleSelect={handleSelect}
+            selected={selectedAssignment}
+          />
+        )}
+      </>)}
     </Main>
   );
 };

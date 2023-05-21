@@ -35,13 +35,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import SchoolIcon from '@mui/icons-material/School';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { createCourse, deleteCourse, findAllCourses, updateCourse } from '../../services/course';
 import CourseSchema from '../../schemas/course';
 import { Icon } from '@mui/material';
 
-import { removeNewlines, removeWhitespace, removeNonDigits } from '../../common/string';
+import { removeNewlines, removeNonDigits, removeWhitespace } from '../../common/string';
 
 const CourseCreate = ({ close }) => {
   const queryClient = useQueryClient();
@@ -287,10 +288,12 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'detailsOpen' }
   },
 );
 
-const CourseTable = ({ data, selectCourse, selectedCourse }) => {
-  const [sortingCriterion, setSortingCriterion] = useState('');
-  const [sortingDirection, setSortingDirection] = useState('asc');
-
+const CourseTable = ({
+  data,
+  selectCourse, selectedCourse,
+  sortingCriterion, setSortingCriterion,
+  sortingDirection, setSortingDirection,
+}) => {
   const handleSortRequest = (criterion) => {
     const direction = (sortingCriterion === criterion && sortingDirection === 'asc') ? 'desc' : 'asc';
     setSortingDirection(direction);
@@ -342,9 +345,55 @@ const CourseTable = ({ data, selectCourse, selectedCourse }) => {
   );
 };
 
+const CourseEmpty = ({ handleCreate }) => {
+  return (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+    }}>
+      <Icon component={SchoolIcon} sx={{ fontSize: '160px', color: 'primary.main' }}></Icon>
+      <Typography variant="h6">You don&apos;t have any courses.</Typography>
+      <Typography variant="body2" sx={{ mt: 1 }}>Would you like to create one now?</Typography>
+      <Button variant="outlined" sx={{ mt: 2 }} onClick={handleCreate}>New</Button>
+    </Box>
+  );
+};
+
+const CourseFilterEmpty = () => {
+  return (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+    }}>
+      <Icon component={SearchOffIcon} sx={{ fontSize: '160px', color: 'primary.main' }}></Icon>
+      <Typography variant="h6">No courses match these criteria.</Typography>
+      <Typography variant="body2" sx={{ mt: 1 }}>Try searching for something else instead.</Typography>
+    </Box>
+  );
+};
+
 const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, setSelectedCourse }) => {
+  const [searchValue, setSearchValue] = useState(null);
+  const [searchingCriterion, setSearchingCriterion] = useState(null);
+  const [sortingCriterion, setSortingCriterion] = useState(null);
+  const [sortingDirection, setSortingDirection] = useState('asc');
+
+  const params = {
+    order: sortingDirection,
+    orderBy: sortingCriterion,
+    search: searchingCriterion,
+  };
+
   const { status, data } = useQuery({
-    queryKey: ['courses'], queryFn: findAllCourses,
+    queryKey: ['courses', params],
+    queryFn: () => findAllCourses(params),
+    keepPreviousData : true,
   });
 
   const openCreatePane = () => {
@@ -370,18 +419,9 @@ const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, set
       detailsOpen={!!selectedAction}
       sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 3 }}
     >
-      {data.length === 0 ? <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-      }}>
-        <Icon component={SchoolIcon} sx={{ fontSize: '160px', color: 'primary.main' }}></Icon>
-        <Typography variant="h6">You don&apos;t have any courses.</Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>Would you like to create one now?</Typography>
-        <Button variant="outlined" sx={{ mt: 2 }} onClick={openCreatePane}>New</Button>
-      </Box> : <>
+      {(data.length === 0 && !searchingCriterion) ? (
+        <CourseEmpty handleCreate={openCreatePane}/>
+      ) : <>
         <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
           <Tooltip title="Create Course">
             <Button variant="contained" onClick={openCreatePane}>New</Button>
@@ -390,21 +430,37 @@ const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, set
             component="form"
             sx={{ p: '2px 4px', display: 'flex', flex: 1, alignItems: 'center' }}
           >
-            <IconButton sx={{ p: '10px' }}>
+            <IconButton sx={{ p: '10px' }} onClick={() => setSearchingCriterion(searchValue)}>
               <SearchIcon/>
             </IconButton>
             <InputBase
               sx={{ ml: 1, flex: 1 }}
               placeholder="Search"
+              onChange={(event) => setSearchValue(event.target.value)}
+              onBlur={() => setSearchingCriterion(searchValue)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  setSearchingCriterion(searchValue);
+                }
+              }}
             />
           </Paper>
         </Box>
 
-        <CourseTable
-          data={data}
-          selectCourse={openUpdatePane}
-          selectedCourse={selectedCourse}
-        />
+        {(data.length === 0 && !!searchingCriterion) ? (
+          <CourseFilterEmpty/>
+        ) : (
+          <CourseTable
+            data={data}
+            selectCourse={openUpdatePane}
+            selectedCourse={selectedCourse}
+            sortingCriterion={sortingCriterion}
+            setSortingCriterion={setSortingCriterion}
+            sortingDirection={sortingDirection}
+            setSortingDirection={setSortingDirection}
+          />
+        )}
       </>}
     </Main>
   );

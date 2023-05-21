@@ -25,8 +25,8 @@ class AssignmentController {
     }
 
     @GetMapping
-    public List<AssignmentResponse> findAll() {
-        return service.findAll().stream()
+    public List<AssignmentResponse> findAll(AssignmentQuery query) {
+        return service.findAll(query).stream()
             .map(converter::toResponse)
             .toList();
     }

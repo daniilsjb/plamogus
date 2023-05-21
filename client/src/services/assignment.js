@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080/assignments';
 
-export const findAllAssignments = async () => {
-  const response = await axios.get(`${BASE_URL}`);
+export const findAllAssignments = async (params) => {
+  const response = await axios.get(`${BASE_URL}`, { params });
   return response.data;
 };
 

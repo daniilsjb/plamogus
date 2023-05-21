@@ -25,8 +25,8 @@ class CourseController {
     }
 
     @GetMapping
-    public List<CourseResponse> findAll() {
-        return service.findAll().stream()
+    public List<CourseResponse> findAll(CourseQuery query) {
+        return service.findAll(query).stream()
             .map(converter::toResponse)
             .toList();
     }

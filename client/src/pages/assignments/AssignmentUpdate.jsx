@@ -236,7 +236,7 @@ const AssignmentUpdate = ({ close, assignment }) => {
   });
 
   const { status, data } = useQuery({
-    queryKey: ['courses'], queryFn: findAllCourses,
+    queryKey: ['courses'], queryFn: () => findAllCourses({}),
   });
 
   const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
