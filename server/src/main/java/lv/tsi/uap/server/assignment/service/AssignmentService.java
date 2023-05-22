@@ -1,22 +1,13 @@
 package lv.tsi.uap.server.assignment.service;
 
 import lombok.NonNull;
+import lv.tsi.uap.server.common.service.CrudService;
 import lv.tsi.uap.server.assignment.endpoint.AssignmentQuery;
+import lv.tsi.uap.server.common.service.QueryService;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface AssignmentService {
-
-    Assignment create(@NonNull Assignment entity);
-
-    List<Assignment> findAll(AssignmentQuery query);
-
-    Assignment findOne(@NonNull UUID id);
-
-    Assignment update(@NonNull Assignment entity);
-
-    void delete(@NonNull UUID id);
+public interface AssignmentService extends CrudService<Assignment, UUID>, QueryService<Assignment, AssignmentQuery> {
 
     void complete(@NonNull UUID id);
 

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lv.tsi.uap.server.assignment.service.Assignment;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -12,8 +14,7 @@ import lv.tsi.uap.server.assignment.service.Assignment;
 public class Step {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(nullable = false, length = 64)
     private String title;

@@ -12,13 +12,13 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/assignments/{assignmentId}/steps")
+@RequestMapping
 class StepController {
 
     private final StepService service;
     private final StepConverter converter;
 
-    @PostMapping
+    @PostMapping("/assignments/{assignmentId}/steps")
     @ResponseStatus(HttpStatus.CREATED)
     public StepResponse create(@PathVariable UUID assignmentId, @Valid @RequestBody StepRequest request) {
         var entity = converter.toEntity(request);
@@ -26,37 +26,36 @@ class StepController {
         return converter.toResponse(service.create(entity));
     }
 
-    @GetMapping
+    @GetMapping("/assignments/{assignmentId}/steps")
     public List<StepResponse> findAll(@PathVariable UUID assignmentId) {
-        return service.findAll(assignmentId).stream()
+        return service.findAll(new StepQuery(assignmentId)).stream()
             .map(converter::toResponse)
             .toList();
     }
 
-    @PutMapping("/{index}")
-    public StepResponse update(@PathVariable UUID assignmentId, @PathVariable Integer index, @Valid @RequestBody StepRequest request) {
+    @PutMapping("/steps/{id}")
+    public StepResponse update(@PathVariable UUID id, @Valid @RequestBody StepRequest request) {
         var entity = converter.toEntity(request);
-        entity.setAssignment(new Assignment(assignmentId));
-        entity.setIndex(index);
+        entity.setId(id);
         return converter.toResponse(service.update(entity));
     }
 
-    @DeleteMapping("/{index}")
+    @DeleteMapping("/steps/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID assignmentId, @PathVariable Integer index) {
-        service.delete(assignmentId, index);
+    public void delete(@PathVariable UUID id) {
+        service.delete(id);
     }
 
-    @PutMapping("/{index}/completion")
+    @PutMapping("/steps/{id}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void complete(@PathVariable UUID assignmentId, @PathVariable Integer index) {
-        service.complete(assignmentId, index);
+    public void complete(@PathVariable UUID id) {
+        service.complete(id);
     }
 
-    @DeleteMapping("/{index}/completion")
+    @DeleteMapping("/steps/{id}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void uncomplete(@PathVariable UUID assignmentId, @PathVariable Integer index) {
-        service.uncomplete(assignmentId, index);
+    public void uncomplete(@PathVariable UUID id) {
+        service.uncomplete(id);
     }
 
 }

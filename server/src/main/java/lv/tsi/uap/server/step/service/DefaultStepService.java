@@ -2,8 +2,9 @@ package lv.tsi.uap.server.step.service;
 
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lv.tsi.uap.server.assignment.service.AssignmentRepository;
+import lv.tsi.uap.server.common.service.AbstractCrudService;
+import lv.tsi.uap.server.step.endpoint.StepQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,66 +13,71 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-class DefaultStepService implements StepService {
+class DefaultStepService extends AbstractCrudService<Step, UUID, StepRepository> implements StepService {
 
-    private final StepRepository steps;
-    private final AssignmentRepository assignments;
+    private final AssignmentRepository assignmentRepository;
+
+    public DefaultStepService(StepRepository repository, AssignmentRepository assignmentRepository) {
+        super(repository);
+        this.assignmentRepository = assignmentRepository;
+    }
 
     @Override
     public Step create(@NonNull Step entity) {
         var assignmentId = entity.getAssignment().getId();
-        if (!assignments.existsById(assignmentId)) {
+        if (!assignmentRepository.existsById(assignmentId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var nextIndex = steps.findLastIndex(entity.getAssignment().getId())
-            .map(it -> it + 1)
+        var nextIndex = repository.findLastIndex(assignmentId)
+            .map(previous -> previous + 1)
             .orElse(0);
 
+        entity.setId(UUID.randomUUID());
         entity.setIndex(nextIndex);
-        return steps.save(entity);
+        return repository.save(entity);
     }
 
     @Override
-    public List<Step> findAll(@NonNull UUID assignmentId) {
-        return steps.findByAssignmentIdOrderByIndex(assignmentId);
+    public List<Step> findAll(@NonNull StepQuery query) {
+        return repository.findByAssignmentIdOrderByIndex(query.getAssignmentId());
     }
 
     @Override
     public Step update(@NonNull Step entity) {
-        var assignmentId = entity.getAssignment().getId();
-        var index = entity.getIndex();
-        var existingEntity = steps.findByAssignmentIdAndIndex(assignmentId, index)
+        var existingEntity = repository.findById(entity.getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         existingEntity.setTitle(entity.getTitle());
-        return steps.save(existingEntity);
+        return repository.save(existingEntity);
     }
 
     @Override
     @Transactional
-    public void delete(@NonNull UUID assignmentId, @NonNull Integer index) {
-        steps.deleteByAssignmentIdAndIndex(assignmentId, index);
-        steps.updateIndices(assignmentId, index);
+    public void delete(@NonNull UUID id) {
+        repository.findById(id).ifPresent(entity -> {
+            var assignmentId = entity.getAssignment().getId();
+            repository.deleteById(id);
+            repository.updateIndices(assignmentId, entity.getIndex());
+        });
     }
 
     @Override
-    public void complete(@NonNull UUID assignmentId, @NonNull Integer index) {
-        var existingEntity = steps.findByAssignmentIdAndIndex(assignmentId, index)
+    public void complete(@NonNull UUID id) {
+        var existingEntity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         existingEntity.setCompleted(true);
-        steps.save(existingEntity);
+        repository.save(existingEntity);
     }
 
     @Override
-    public void uncomplete(@NonNull UUID assignmentId, @NonNull Integer index) {
-        var existingEntity = steps.findByAssignmentIdAndIndex(assignmentId, index)
+    public void uncomplete(@NonNull UUID id) {
+        var existingEntity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         existingEntity.setCompleted(false);
-        steps.save(existingEntity);
+        repository.save(existingEntity);
     }
 
 }

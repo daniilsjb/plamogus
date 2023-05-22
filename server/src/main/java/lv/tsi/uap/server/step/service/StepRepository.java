@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface StepRepository extends JpaRepository<Step, Long> {
+public interface StepRepository extends JpaRepository<Step, UUID> {
 
     @Query("SELECT MAX(s.index) FROM Step s WHERE s.assignment.id = ?1")
     Optional<Integer> findLastIndex(UUID assignmentId);
@@ -20,9 +20,5 @@ public interface StepRepository extends JpaRepository<Step, Long> {
     void updateIndices(UUID assignmentId, Integer start);
 
     List<Step> findByAssignmentIdOrderByIndex(UUID assignmentId);
-
-    Optional<Step> findByAssignmentIdAndIndex(UUID assignmentId, Integer index);
-
-    void deleteByAssignmentIdAndIndex(UUID assignmentId, Integer index);
 
 }

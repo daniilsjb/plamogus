@@ -75,10 +75,10 @@ const DeletionDialog = ({ open, setOpen, assignment, closeDetails }) => {
   );
 };
 
-const AssignmentStep = ({ assignment, step, index }) => {
+const AssignmentStep = ({ assignment, step }) => {
   const queryClient = useQueryClient();
   const deletion = useMutation({
-    mutationFn: async () => deleteStep(assignment.id, index),
+    mutationFn: async () => deleteStep(step.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['steps', assignment.id] });
     },
@@ -86,9 +86,9 @@ const AssignmentStep = ({ assignment, step, index }) => {
 
   const toggleCompletion = async () => {
     if (step.completed) {
-      await uncompleteStep(assignment.id, index);
+      await uncompleteStep(step.id);
     } else {
-      await completeStep(assignment.id, index);
+      await completeStep(step.id);
     }
   };
 
@@ -100,7 +100,7 @@ const AssignmentStep = ({ assignment, step, index }) => {
   });
 
   const update = useMutation({
-    mutationFn: async ({ id, index, request }) => updateStep(id, index, request),
+    mutationFn: async (request) => updateStep(step.id, request),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['steps', assignment.id] });
     },
@@ -119,7 +119,7 @@ const AssignmentStep = ({ assignment, step, index }) => {
     if (!value) {
       await deletion.mutateAsync(null);
     } else {
-      await update.mutateAsync({ id: assignment.id, index: index, request: { title: value } });
+      await update.mutateAsync({ title: value });
     }
   };
 
@@ -177,8 +177,8 @@ const AssignmentSteps = ({ assignment }) => {
     return <Typography>Oops! An error occurred.</Typography>;
   }
 
-  return data.map((step, idx) => (
-    <AssignmentStep key={step.id} assignment={assignment} step={step} index={idx}/>
+  return data.map(step => (
+    <AssignmentStep key={step.id} assignment={assignment} step={step}/>
   ));
 };
 

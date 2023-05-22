@@ -1,8 +1,8 @@
 package lv.tsi.uap.server.assignment.service;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lv.tsi.uap.server.assignment.endpoint.AssignmentQuery;
+import lv.tsi.uap.server.common.service.AbstractCrudService;
 import lv.tsi.uap.server.course.service.CourseRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,11 +18,14 @@ import java.util.UUID;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
-@RequiredArgsConstructor
-class DefaultAssignmentService implements AssignmentService {
+class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, AssignmentRepository> implements AssignmentService {
 
-    private final AssignmentRepository assignments;
-    private final CourseRepository courses;
+    private final CourseRepository courseRepository;
+
+    public DefaultAssignmentService(AssignmentRepository repository, CourseRepository courseRepository) {
+        super(repository);
+        this.courseRepository = courseRepository;
+    }
 
     private static Specification<Assignment> hasType(AssignmentType type) {
         return (root, query, builder) -> (type == null)
@@ -46,18 +49,18 @@ class DefaultAssignmentService implements AssignmentService {
     public Assignment create(@NonNull Assignment entity) {
         if (entity.getCourse() != null) {
             var courseId = entity.getCourse().getId();
-            if (!courses.existsById(courseId)) {
+            if (!courseRepository.existsById(courseId)) {
                 throw new NoSuchElementException("Course '%s' does not exist".formatted(courseId));
             }
         }
 
         entity.setId(UUID.randomUUID());
         entity.setCreationTime(Instant.now());
-        return assignments.save(entity);
+        return repository.save(entity);
     }
 
     @Override
-    public List<Assignment> findAll(AssignmentQuery query) {
+    public List<Assignment> findAll(@NonNull AssignmentQuery query) {
         var direction = Sort.Direction.ASC;
         if ("desc".equalsIgnoreCase(query.getOrder())) {
             direction = Sort.Direction.DESC;
@@ -68,25 +71,19 @@ class DefaultAssignmentService implements AssignmentService {
             .and(hasCourse(query.getCourse()))
             .and(hasTitleContaining(query.getTitle()));
 
-        return assignments.findAll(specification, sort);
-    }
-
-    @Override
-    public Assignment findOne(@NonNull UUID id) {
-        return assignments.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return repository.findAll(specification, sort);
     }
 
     @Override
     public Assignment update(@NonNull Assignment entity) {
         if (entity.getCourse() != null) {
             var courseId = entity.getCourse().getId();
-            if (!courses.existsById(courseId)) {
+            if (!courseRepository.existsById(courseId)) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
         }
 
-        var existingEntity = assignments.findById(entity.getId());
+        var existingEntity = repository.findById(entity.getId());
         existingEntity.ifPresentOrElse(
             it -> {
                 entity.setCreationTime(it.getCreationTime());
@@ -98,30 +95,25 @@ class DefaultAssignmentService implements AssignmentService {
             }
         );
 
-        return assignments.save(entity);
-    }
-
-    @Override
-    public void delete(@NonNull UUID id) {
-        assignments.deleteById(id);
+        return repository.save(entity);
     }
 
     @Override
     public void complete(@NonNull UUID id) {
-        var entity = assignments.findById(id)
+        var entity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         entity.setCompleted(true);
-        assignments.save(entity);
+        repository.save(entity);
     }
 
     @Override
     public void uncomplete(@NonNull UUID id) {
-        var entity = assignments.findById(id)
+        var entity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         entity.setCompleted(false);
-        assignments.save(entity);
+        repository.save(entity);
     }
 
 }

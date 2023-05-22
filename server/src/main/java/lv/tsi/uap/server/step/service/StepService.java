@@ -1,22 +1,16 @@
 package lv.tsi.uap.server.step.service;
 
 import lombok.NonNull;
+import lv.tsi.uap.server.common.service.CrudService;
+import lv.tsi.uap.server.common.service.QueryService;
+import lv.tsi.uap.server.step.endpoint.StepQuery;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface StepService {
+public interface StepService extends CrudService<Step, UUID>, QueryService<Step, StepQuery> {
 
-    Step create(@NonNull Step entity);
+    void complete(@NonNull UUID id);
 
-    List<Step> findAll(@NonNull UUID assignmentId);
-
-    Step update(@NonNull Step entity);
-
-    void delete(@NonNull UUID assignmentId, @NonNull Integer index);
-
-    void complete(@NonNull UUID assignmentId, @NonNull Integer index);
-
-    void uncomplete(@NonNull UUID assignmentId, @NonNull Integer index);
+    void uncomplete(@NonNull UUID id);
 
 }
