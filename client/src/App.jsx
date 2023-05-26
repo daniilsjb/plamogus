@@ -16,6 +16,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
+import ErrorPage from './pages/error/Index';
+import NotFoundPage from './pages/not-found/Index';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
   ({ theme, sidebarOpen }) => {
@@ -70,7 +72,9 @@ const App = () => {
                 overflow: 'auto',
               }} sidebarOpen={sidebarOpen}>
                 <Routes>
+                  <Route path="/*" element={<NotFoundPage/>}/>
                   <Route path="/" element={<Navigate to="/assignments" replace/>}/>
+                  <Route path="/error" element={<ErrorPage/>}/>
                   <Route path="/login" element={<Login/>}/>
                   <Route path="/register" element={<Register/>}/>
                   <Route path="/dashboard" element={
