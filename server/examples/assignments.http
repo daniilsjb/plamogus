@@ -1,6 +1,7 @@
 ### Create a new assignment
 POST {{uap-host}}/assignments
 Content-Type: application/json
+Authorization: Bearer {{auth-token}}
 
 {
   "title": "Programming Lab #3",
@@ -13,14 +14,17 @@ Content-Type: application/json
 ### Read all assignments
 GET {{uap-host}}/assignments
 Accept: application/json
+Authorization: Bearer {{auth-token}}
 
 ### Read one assignment
 GET {{uap-host}}/assignments/{id}
 Accept: application/json
+Authorization: Bearer {{auth-token}}
 
 ### Update an assignment
 PUT {{uap-host}}/assignments/{id}
 Content-Type: application/json
+Authorization: Bearer {{auth-token}}
 
 {
   "title": "Programming Lab #3",
@@ -32,9 +36,12 @@ Content-Type: application/json
 
 ### Delete an assignment
 DELETE {{uap-host}}/assignments/{id}
+Authorization: Bearer {{auth-token}}
 
 ### Mark an assignment as completed
 PUT {{uap-host}}/assignments/{id}/completion
+Authorization: Bearer {{auth-token}}
 
 ### Mark an assignment as not completed
 DELETE {{uap-host}}/assignments/{id}/completion
+Authorization: Bearer {{auth-token}}

@@ -1,3 +1,4 @@
 ### Index
 GET {{uap-host}}/dashboard
 Accept: application/json
+Authorization: Bearer {{auth-token}}

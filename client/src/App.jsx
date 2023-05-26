@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Dashboard from './pages/dashboard/Dashboard';
 import Assignments from './pages/assignments/Index';
+import Login from './pages/login/Index';
+import Register from './pages/register/Index';
 import Courses from './pages/courses/Courses';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -13,6 +15,7 @@ import { ColorModeContext, useColorMode } from './theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import AuthenticatedRoute from './components/AuthenticatedRoute';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
   ({ theme, sidebarOpen }) => {
@@ -58,11 +61,33 @@ const App = () => {
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               <Header setSidebarOpen={setSidebarOpen}/>
-              <Main sx={{ display: 'flex', flex: 1, minHeight: 0, p: { xs: 1, sm: 2, md: 3 }, justifyContent: 'center', overflow: 'auto' }} sidebarOpen={sidebarOpen}>
+              <Main sx={{
+                display: 'flex',
+                flex: 1,
+                minHeight: 0,
+                p: { xs: 1, sm: 2, md: 3 },
+                justifyContent: 'center',
+                overflow: 'auto',
+              }} sidebarOpen={sidebarOpen}>
                 <Routes>
-                  <Route path="/dashboard" element={<Dashboard/>}></Route>
-                  <Route path="/assignments" element={<Assignments/>}></Route>
-                  <Route path="/courses" element={<Courses/>}></Route>
+                  <Route path="/" element={<Navigate to="/assignments" replace/>}/>
+                  <Route path="/login" element={<Login/>}/>
+                  <Route path="/register" element={<Register/>}/>
+                  <Route path="/dashboard" element={
+                    <AuthenticatedRoute>
+                      <Dashboard/>
+                    </AuthenticatedRoute>
+                  }/>
+                  <Route path="/assignments" element={
+                    <AuthenticatedRoute>
+                      <Assignments/>
+                    </AuthenticatedRoute>
+                  }/>
+                  <Route path="/courses" element={
+                    <AuthenticatedRoute>
+                      <Courses/>
+                    </AuthenticatedRoute>
+                  }/>
                 </Routes>
               </Main>
             </Box>

@@ -1,6 +1,7 @@
 ### Append a step to an assignment
 POST {{uap-host}}/assignments/{assignmentId}/steps
 Content-Type: application/json
+Authorization: Bearer {{auth-token}}
 
 {
   "title": "Prepare a report from the provided template."
@@ -9,10 +10,12 @@ Content-Type: application/json
 ### Read all steps of an assignment
 GET {{uap-host}}/assignments/{assignmentId}/steps
 Accept: application/json
+Authorization: Bearer {{auth-token}}
 
 ### Update a step of an assignment
 PUT {{uap-host}}/steps/{id}
 Content-Type: application/json
+Authorization: Bearer {{auth-token}}
 
 {
   "title": "Prepare a report from the provided template."
@@ -20,9 +23,12 @@ Content-Type: application/json
 
 ### Delete a step from an assignment
 DELETE {{uap-host}}/steps/{id}
+Authorization: Bearer {{auth-token}}
 
 ### Mark a step of an assignment as completed
 PUT {{uap-host}}/steps/{id}/completion
+Authorization: Bearer {{auth-token}}
 
 ### Mark a step of an assignment as not completed
 DELETE {{uap-host}}/steps/{id}/completion
+Authorization: Bearer {{auth-token}}
