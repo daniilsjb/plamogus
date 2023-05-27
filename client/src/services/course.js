@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080/courses';
+const BASE_URL = 'http://localhost:8080/api/v1/courses';
 
 export const findAllCourses = async (params) => {
   const response = await axios.get(`${BASE_URL}`, { params });

@@ -4,7 +4,6 @@ import lombok.NonNull;
 import lv.tsi.uap.server.common.service.AbstractCrudService;
 import lv.tsi.uap.server.component.assignment.endpoint.AssignmentQuery;
 import lv.tsi.uap.server.component.course.service.CourseRepository;
-import lv.tsi.uap.server.component.user.service.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -23,12 +22,19 @@ import static org.springframework.data.jpa.domain.Specification.where;
 class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, AssignmentRepository> implements AssignmentService {
 
     private final CourseRepository courseRepository;
-    private final Supplier<User> userSupplier;
+    private final Supplier<UUID> uuidSupplier;
+    private final Supplier<Instant> instantSupplier;
 
-    public DefaultAssignmentService(AssignmentRepository repository, CourseRepository courseRepository, Supplier<User> userSupplier) {
+    public DefaultAssignmentService(
+        AssignmentRepository repository,
+        CourseRepository courseRepository,
+        Supplier<UUID> uuidSupplier,
+        Supplier<Instant> instantSupplier
+    ) {
         super(repository);
         this.courseRepository = courseRepository;
-        this.userSupplier = userSupplier;
+        this.uuidSupplier = uuidSupplier;
+        this.instantSupplier = instantSupplier;
     }
 
     private static Specification<Assignment> hasType(AssignmentType type) {
@@ -49,41 +55,29 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
             : builder.like(builder.lower(root.get("title")), "%" + title.toLowerCase() + "%");
     }
 
-    private static Specification<Assignment> hasUser(UUID id) {
-        return (root, query, builder) ->
-            builder.equal(root.get("profile").get("id"), id);
-    }
-
     @Override
     public Assignment create(@NonNull Assignment entity) {
-        final var user = userSupplier.get();
-
         if (entity.getCourse() != null) {
-            var courseId = entity.getCourse().getId();
-            if (!courseRepository.existsByIdAndProfileId(courseId, user.getId())) {
+            final var courseId = entity.getCourse().getId();
+            if (!courseRepository.existsById(courseId)) {
                 throw new NoSuchElementException("Course '%s' does not exist".formatted(courseId));
             }
         }
 
-        entity.setId(UUID.randomUUID());
-        entity.setCreationTime(Instant.now());
-        entity.setProfile(user);
-
+        entity.setId(uuidSupplier.get());
+        entity.setCreationTime(instantSupplier.get());
         return repository.save(entity);
     }
 
     @Override
     public List<Assignment> findAll(@NonNull AssignmentQuery query) {
-        final var user = userSupplier.get();
-
         var direction = Sort.Direction.ASC;
         if ("desc".equalsIgnoreCase(query.getOrder())) {
             direction = Sort.Direction.DESC;
         }
 
-        var sort = Sort.by(direction, query.getOrderBy());
-        var specification = where(hasUser(user.getId()))
-            .and(hasTitleContaining(query.getTitle()))
+        final var sort = Sort.by(direction, query.getOrderBy());
+        final var specification = where(hasTitleContaining(query.getTitle()))
             .and(hasCourse(query.getCourse()))
             .and(hasType(query.getType()));
 
@@ -91,34 +85,23 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
     }
 
     @Override
-    public Assignment findOne(@NonNull UUID id) {
-        final var user = userSupplier.get();
-        return repository.findByIdAndProfileId(id, user.getId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
-
-    @Override
     public Assignment update(@NonNull Assignment entity) {
-        final var user = userSupplier.get();
-
         if (entity.getCourse() != null) {
             var courseId = entity.getCourse().getId();
-            if (!courseRepository.existsByIdAndProfileId(courseId, user.getId())) {
+            if (!courseRepository.existsById(courseId)) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
         }
 
-        var existingEntity = repository.findById(entity.getId());
+        final var existingEntity = repository.findById(entity.getId());
         existingEntity.ifPresentOrElse(
             it -> {
                 entity.setCreationTime(it.getCreationTime());
                 entity.setCompleted(it.getCompleted());
-                entity.setProfile(it.getProfile());
             },
             () -> {
-                entity.setCreationTime(Instant.now());
+                entity.setCreationTime(instantSupplier.get());
                 entity.setCompleted(false);
-                entity.setProfile(user);
             }
         );
 
@@ -126,17 +109,8 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
     }
 
     @Override
-    public void delete(@NonNull UUID id) {
-        final var user = userSupplier.get();
-        if (repository.existsByIdAndProfileId(id, user.getId())) {
-            super.delete(id);
-        }
-    }
-
-    @Override
     public void complete(@NonNull UUID id) {
-        final var user = userSupplier.get();
-        var entity = repository.findByIdAndProfileId(id, user.getId())
+        var entity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         entity.setCompleted(true);
@@ -145,8 +119,7 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
 
     @Override
     public void uncomplete(@NonNull UUID id) {
-        final var user = userSupplier.get();
-        var entity = repository.findByIdAndProfileId(id, user.getId())
+        var entity = repository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         entity.setCompleted(false);

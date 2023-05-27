@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8080/api/v1';
 
 export const findAllSteps = async (assignmentId) => {
   const response = await axios.get(`${BASE_URL}/assignments/${assignmentId}/steps`);

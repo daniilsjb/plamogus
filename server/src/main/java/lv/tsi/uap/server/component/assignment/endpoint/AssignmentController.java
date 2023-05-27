@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/assignments")
+@RequestMapping("/api/v1/assignments")
 class AssignmentController {
 
     private final AssignmentService service;
@@ -38,7 +38,7 @@ class AssignmentController {
 
     @PutMapping("/{id}")
     public AssignmentResponse update(@PathVariable UUID id, @Valid @RequestBody AssignmentRequest request) {
-        var entity = converter.toEntity(request);
+        final var entity = converter.toEntity(request);
         entity.setId(id);
         return converter.toResponse(service.update(entity));
     }

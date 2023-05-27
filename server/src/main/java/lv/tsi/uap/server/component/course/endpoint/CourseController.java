@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/courses")
+@RequestMapping("/api/v1/courses")
 class CourseController {
 
     private final CourseService service;
@@ -20,7 +20,7 @@ class CourseController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CourseResponse create(@Valid @RequestBody CourseRequest request) {
-        var entity = converter.toEntity(request);
+        final var entity = converter.toEntity(request);
         return converter.toResponse(service.create(entity));
     }
 
@@ -38,7 +38,7 @@ class CourseController {
 
     @PutMapping("/{id}")
     public CourseResponse update(@PathVariable UUID id, @Valid @RequestBody CourseRequest request) {
-        var entity = converter.toEntity(request);
+        final var entity = converter.toEntity(request);
         entity.setId(id);
         return converter.toResponse(service.update(entity));
     }

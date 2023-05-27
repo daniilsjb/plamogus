@@ -1,15 +1,10 @@
 import { useState } from 'react';
-
+import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { styled, useTheme } from '@mui/material/styles';
-
-import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 
 import CourseOverview from './CourseOverview';
-import CourseCreate from './CourseCreate';
-import CourseUpdate from './CourseUpdate';
 
 const CourseDetails = ({ selectedAction, setSelectedAction, selectedCourse, setSelectedCourse }) => {
   const { breakpoints, width } = useTheme();

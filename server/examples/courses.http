@@ -1,7 +1,6 @@
 ### Create a course
 POST {{uap-host}}/courses
 Content-Type: application/json
-Authorization: Bearer {{auth-token}}
 
 {
   "code": "DSA",
@@ -13,17 +12,14 @@ Authorization: Bearer {{auth-token}}
 ### Read all courses
 GET {{uap-host}}/courses
 Accept: application/json
-Authorization: Bearer {{auth-token}}
 
 ### Read one course
 GET {{uap-host}}/courses/{id}
 Accept: application/json
-Authorization: Bearer {{auth-token}}
 
 ### Update a course
 PUT {{uap-host}}/courses/{id}
 Content-Type: application/json
-Authorization: Bearer {{auth-token}}
 
 {
   "code": "DSA",
@@ -34,4 +30,3 @@ Authorization: Bearer {{auth-token}}
 
 ### Delete a course
 DELETE {{uap-host}}/courses/{id}
-Authorization: Bearer {{auth-token}}

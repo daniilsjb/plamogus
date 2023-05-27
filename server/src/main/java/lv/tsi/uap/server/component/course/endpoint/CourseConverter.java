@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 class CourseConverter {
 
     public Course toEntity(@NonNull CourseRequest request) {
-        var course = new Course();
+        final var course = new Course();
         course.setCode(request.getCode());
         course.setTitle(request.getTitle());
         course.setDescription(request.getDescription());

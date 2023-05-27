@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 class AssignmentConverter {
 
     public Assignment toEntity(@NonNull AssignmentRequest request) {
-        var entity = new Assignment();
+        final var entity = new Assignment();
         entity.setTitle(request.getTitle());
         entity.setDescription(request.getDescription());
         entity.setDeadlineTime(request.getDeadlineTime());
@@ -21,7 +21,7 @@ class AssignmentConverter {
     }
 
     public AssignmentResponse toResponse(@NonNull Assignment entity) {
-        var builder = AssignmentResponse.builder()
+        final var builder = AssignmentResponse.builder()
             .id(entity.getId())
             .title(entity.getTitle())
             .description(entity.getDescription())
@@ -30,7 +30,7 @@ class AssignmentConverter {
             .deadlineTime(entity.getDeadlineTime())
             .type(entity.getType());
 
-        var courseEntity = entity.getCourse();
+        final var courseEntity = entity.getCourse();
         if (courseEntity != null) {
             builder.course(AssignmentResponse.Course.builder()
                 .id(courseEntity.getId())

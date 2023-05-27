@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lv.tsi.uap.server.component.course.service.Course;
 import lv.tsi.uap.server.component.step.service.Step;
-import lv.tsi.uap.server.component.user.service.User;
 
 import java.time.Instant;
 import java.util.List;
@@ -45,10 +44,6 @@ public class Assignment {
 
     @OneToMany(mappedBy = "assignment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Step> steps;
-
-    @ManyToOne
-    @JoinColumn(name = "_user_id", nullable = false)
-    private User profile;
 
     public Assignment(UUID id) {
         this.id = id;

@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lv.tsi.uap.server.component.assignment.service.Assignment;
 import lv.tsi.uap.server.component.assignment.service.AssignmentRepository;
 import lv.tsi.uap.server.component.dashboard.endpoint.DashboardResponse;
-import lv.tsi.uap.server.component.user.service.User;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,24 +14,22 @@ import java.util.stream.Collectors;
 public class DefaultDashboardService implements DashboardService {
 
     private final AssignmentRepository assignmentRepository;
-    private final Supplier<User> userSupplier;
 
     @Override
     public DashboardResponse index() {
-        final var user = userSupplier.get();
-        var assignments = assignmentRepository.findAllByProfileId(user.getId());
+        final var assignments = assignmentRepository.findAll();
 
-        var pendingCount = assignments.stream()
+        final var pendingCount = assignments.stream()
             .filter(it -> !it.getCompleted())
             .count();
 
-        var overdueCount = assignments.stream()
+        final var overdueCount = assignments.stream()
             .filter(it -> !it.getCompleted() &&
                 it.getDeadlineTime() != null &&
                 it.getDeadlineTime().isBefore(Instant.now()))
             .count();
 
-        var typeFrequencies = assignments.stream()
+        final var typeFrequencies = assignments.stream()
             .filter(it -> it.getType() != null)
             .collect(Collectors.groupingBy(Assignment::getType, Collectors.counting()))
             .entrySet().stream()
@@ -43,7 +39,7 @@ public class DefaultDashboardService implements DashboardService {
                 .build())
             .toList();
 
-        var semesterFrequencies = assignmentRepository.countAssignmentsByCourseSemester(user.getId())
+        final var semesterFrequencies = assignmentRepository.countAssignmentsBySemester()
             .stream()
             .map(it -> DashboardResponse.SemesterFrequency.builder()
                 .semester((Integer)it[0])
@@ -51,7 +47,7 @@ public class DefaultDashboardService implements DashboardService {
                 .build())
             .toList();
 
-        var deadlineFrequencies = assignments.stream()
+        final var deadlineFrequencies = assignments.stream()
             .filter(it -> !it.getCompleted() && it.getDeadlineTime() != null)
             .collect(Collectors.groupingBy(Assignment::getDeadlineTime, Collectors.counting()))
             .entrySet().stream()

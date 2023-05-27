@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/api/v1")
 class StepController {
 
     private final StepService service;
@@ -21,7 +21,7 @@ class StepController {
     @PostMapping("/assignments/{assignmentId}/steps")
     @ResponseStatus(HttpStatus.CREATED)
     public StepResponse create(@PathVariable UUID assignmentId, @Valid @RequestBody StepRequest request) {
-        var entity = converter.toEntity(request);
+        final var entity = converter.toEntity(request);
         entity.setAssignment(new Assignment(assignmentId));
         return converter.toResponse(service.create(entity));
     }
@@ -35,7 +35,7 @@ class StepController {
 
     @PutMapping("/steps/{id}")
     public StepResponse update(@PathVariable UUID id, @Valid @RequestBody StepRequest request) {
-        var entity = converter.toEntity(request);
+        final var entity = converter.toEntity(request);
         entity.setId(id);
         return converter.toResponse(service.update(entity));
     }

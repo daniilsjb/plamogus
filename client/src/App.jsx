@@ -6,8 +6,6 @@ import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Dashboard from './pages/dashboard/Dashboard';
 import Assignments from './pages/assignments/Index';
-import Login from './pages/login/Index';
-import Register from './pages/register/Index';
 import Courses from './pages/courses/Courses';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -15,8 +13,6 @@ import { ColorModeContext, useColorMode } from './theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import AuthenticatedRoute from './components/AuthenticatedRoute';
-import ErrorPage from './pages/error/Index';
 import NotFoundPage from './pages/not-found/Index';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
@@ -72,26 +68,11 @@ const App = () => {
                 overflow: 'auto',
               }} sidebarOpen={sidebarOpen}>
                 <Routes>
-                  <Route path="/*" element={<NotFoundPage/>}/>
                   <Route path="/" element={<Navigate to="/assignments" replace/>}/>
-                  <Route path="/error" element={<ErrorPage/>}/>
-                  <Route path="/login" element={<Login/>}/>
-                  <Route path="/register" element={<Register/>}/>
-                  <Route path="/dashboard" element={
-                    <AuthenticatedRoute>
-                      <Dashboard/>
-                    </AuthenticatedRoute>
-                  }/>
-                  <Route path="/assignments" element={
-                    <AuthenticatedRoute>
-                      <Assignments/>
-                    </AuthenticatedRoute>
-                  }/>
-                  <Route path="/courses" element={
-                    <AuthenticatedRoute>
-                      <Courses/>
-                    </AuthenticatedRoute>
-                  }/>
+                  <Route path="/*" element={<NotFoundPage/>}/>
+                  <Route path="/dashboard" element={<Dashboard/>}/>
+                  <Route path="/assignments" element={<Assignments/>}/>
+                  <Route path="/courses" element={<Courses/>}/>
                 </Routes>
               </Main>
             </Box>

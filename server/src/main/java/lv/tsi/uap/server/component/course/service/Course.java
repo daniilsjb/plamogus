@@ -1,9 +1,10 @@
 package lv.tsi.uap.server.component.course.service;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lv.tsi.uap.server.component.assignment.service.Assignment;
-import lv.tsi.uap.server.component.user.service.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,10 +32,6 @@ public class Course {
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Assignment> assignments;
-
-    @ManyToOne
-    @JoinColumn(name = "_user_id", nullable = false)
-    private User profile;
 
     public Course(UUID id) {
         this.id = id;

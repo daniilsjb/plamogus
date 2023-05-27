@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
@@ -17,6 +19,7 @@ class StepResponseTest {
     private String json() {
         return """
             {
+              "id": "c4289ce1-5d46-4c27-8f8d-b4d42a2c1e0d",
               "title": "Hello, world!",
               "completed": false
             }
@@ -25,6 +28,7 @@ class StepResponseTest {
 
     private StepResponse request() {
         return StepResponse.builder()
+            .id(UUID.fromString("c4289ce1-5d46-4c27-8f8d-b4d42a2c1e0d"))
             .title("Hello, world!")
             .completed(false)
             .build();

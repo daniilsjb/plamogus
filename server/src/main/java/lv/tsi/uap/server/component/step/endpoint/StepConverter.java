@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 class StepConverter {
 
     public Step toEntity(@NonNull StepRequest request) {
-        var entity = new Step();
+        final var entity = new Step();
         entity.setTitle(request.getTitle());
         return entity;
     }

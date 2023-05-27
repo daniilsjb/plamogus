@@ -10,8 +10,4 @@ import java.util.UUID;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID>, JpaSpecificationExecutor<Course> {
 
-    Boolean existsByIdAndProfileId(UUID id, UUID profileId);
-
-    Optional<Course> findByIdAndProfileId(UUID id, UUID profileId);
-
 }
