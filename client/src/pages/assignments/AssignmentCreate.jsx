@@ -13,8 +13,8 @@ import { DatePicker, Select, TextField } from '../../components/form-bindings';
 
 import AssignmentSchema from '../../schemas/assignment';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
-import { createAssignment } from '../../services/assignment';
-import { findAllCourses } from '../../services/course';
+import { createAssignment } from '../../api/assignment';
+import { findAllCourses } from '../../api/course';
 import { removeNewlines } from '../../common/string';
 
 const AssignmentCreate = ({ close }) => {

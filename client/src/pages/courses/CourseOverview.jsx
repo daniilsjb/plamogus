@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-import { findAllCourses } from '../../services/course';
+import { findAllCourses } from '../../api/course';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';

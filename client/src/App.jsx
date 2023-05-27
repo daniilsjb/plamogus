@@ -13,7 +13,7 @@ import { ColorModeContext, useColorMode } from './theme';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import NotFoundPage from './pages/not-found/Index';
+import NotFound from './pages/not-found/Index';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
   ({ theme, sidebarOpen }) => {
@@ -69,7 +69,7 @@ const App = () => {
               }} sidebarOpen={sidebarOpen}>
                 <Routes>
                   <Route path="/" element={<Navigate to="/assignments" replace/>}/>
-                  <Route path="/*" element={<NotFoundPage/>}/>
+                  <Route path="/*" element={<NotFound/>}/>
                   <Route path="/dashboard" element={<Dashboard/>}/>
                   <Route path="/assignments" element={<Assignments/>}/>
                   <Route path="/courses" element={<Courses/>}/>

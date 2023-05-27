@@ -32,8 +32,8 @@ import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 import Assignment from './Assignment';
 
-import { findAllCourses } from '../../services/course';
-import { findAllAssignments } from '../../services/assignment';
+import { findAllCourses } from '../../api/course';
+import { findAllAssignments } from '../../api/assignment';
 import { partition } from '../../common/functional';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
 import Chip from '@mui/material/Chip';

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { deleteCourse, updateCourse } from '../../services/course';
+import { deleteCourse, updateCourse } from '../../api/course';
 import { useState } from 'react';
 import { Form, Formik } from 'formik';
 import CourseSchema from '../../schemas/course';

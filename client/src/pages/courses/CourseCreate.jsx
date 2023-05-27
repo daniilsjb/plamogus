@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { createCourse } from '../../services/course';
+import { createCourse } from '../../api/course';
 import { Field, Form, Formik } from 'formik';
 import CourseSchema from '../../schemas/course';
 import Box from '@mui/material/Box';

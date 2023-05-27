@@ -22,7 +22,7 @@ import { Badge, Grid } from '@mui/material';
 import { DateCalendar, PickersDay } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useQuery } from 'react-query';
-import { getDashboard } from '../../services/dashboard';
+import { getDashboard } from '../../api/dashboard';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
 
 // const data = {

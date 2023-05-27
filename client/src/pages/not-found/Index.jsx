@@ -5,7 +5,7 @@ import SearchOffIcon from '@mui/icons-material/SearchOff';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-const NotFoundPage = () => {
+const NotFound = () => {
   const navigate = useNavigate();
 
   return (
@@ -24,4 +24,4 @@ const NotFoundPage = () => {
   )
 };
 
-export default NotFoundPage;
+export default NotFound;

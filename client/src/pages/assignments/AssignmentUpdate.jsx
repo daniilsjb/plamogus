@@ -30,11 +30,11 @@ import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker/Date
 import dayjs from 'dayjs';
 import AssignmentSchema from '../../schemas/assignment';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
-import { deleteAssignment, updateAssignment } from '../../services/assignment';
-import { findAllCourses } from '../../services/course';
+import { deleteAssignment, updateAssignment } from '../../api/assignment';
+import { findAllCourses } from '../../api/course';
 import { removeNewlines } from '../../common/string';
 import Paper from '@mui/material/Paper';
-import { completeStep, createStep, deleteStep, findAllSteps, uncompleteStep, updateStep } from '../../services/step';
+import { completeStep, createStep, deleteStep, findAllSteps, uncompleteStep, updateStep } from '../../api/step';
 
 const DeletionDialog = ({ open, setOpen, assignment, closeDetails }) => {
   const queryClient = useQueryClient();

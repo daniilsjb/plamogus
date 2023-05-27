@@ -18,7 +18,7 @@ import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUnc
 import dayjs from 'dayjs';
 
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
-import { completeAssignment, uncompleteAssignment } from '../../services/assignment';
+import { completeAssignment, uncompleteAssignment } from '../../api/assignment';
 
 const utcToLocalDate = (utc) => {
   return new Date(utc).toLocaleDateString(undefined, {
