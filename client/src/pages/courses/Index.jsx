@@ -1,16 +1,20 @@
 import { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 
 import CourseOverview from './CourseOverview';
+import CourseCreate from './CourseCreate';
+import CourseUpdate from './CourseUpdate';
 
 const CourseDetails = ({ selectedAction, setSelectedAction, selectedCourse, setSelectedCourse }) => {
   const { breakpoints, width } = useTheme();
   const isSidebarTemporary = useMediaQuery(breakpoints.down('md'));
 
-  const close = () => {
+  const open = !!selectedAction;
+  const handleClose = () => {
     setSelectedAction(null);
     setSelectedCourse(null);
   };
@@ -19,15 +23,15 @@ const CourseDetails = ({ selectedAction, setSelectedAction, selectedCourse, setS
     <Drawer
       anchor="right"
       variant={isSidebarTemporary ? 'temporary' : 'persistent'}
-      open={!!selectedAction}
-      onClose={close}
+      open={open}
+      onClose={handleClose}
       PaperProps={{
         sx: { width: width.detailsDrawer, boxSizing: 'border-box', p: 3 },
       }}
     >
       <Toolbar/>
-      {selectedAction === 'create' && <CourseCreate close={close}/>}
-      {selectedAction === 'update' && <CourseUpdate close={close} course={selectedCourse}/>}
+      {selectedAction === 'create' && <CourseCreate close={handleClose}/>}
+      {selectedAction === 'update' && <CourseUpdate close={handleClose} course={selectedCourse}/>}
     </Drawer>
   );
 };

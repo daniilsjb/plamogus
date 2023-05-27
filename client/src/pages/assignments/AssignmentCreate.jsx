@@ -9,13 +9,15 @@ import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 
 import { Field, Form, Formik } from 'formik';
-import { DatePicker, Select, TextField } from '../../components/form-bindings';
 
 import AssignmentSchema from '../../schemas/assignment';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
 import { createAssignment } from '../../api/assignment';
 import { findAllCourses } from '../../api/course';
 import { removeNewlines } from '../../common/string';
+import FormikTextField from '../../components/forms/FormikTextField';
+import FormikDatePicker from '../../components/forms/FormikDatePicker';
+import FormikSelect from '../../components/forms/FormikSelect';
 
 const AssignmentCreate = ({ close }) => {
   const queryClient = useQueryClient();
@@ -38,7 +40,7 @@ const AssignmentCreate = ({ close }) => {
     description: '',
   };
 
-  const onSubmit = async (values, form) => {
+  const handleSubmit = async (values, formik) => {
     const transformed = {
       ...values,
       type: values.type !== '' ? values.type : null,
@@ -47,7 +49,7 @@ const AssignmentCreate = ({ close }) => {
     };
 
     await mutateAsync(transformed);
-    form.resetForm();
+    formik.resetForm();
   };
 
   if (status === 'loading') {
@@ -60,13 +62,13 @@ const AssignmentCreate = ({ close }) => {
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={AssignmentSchema}>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={AssignmentSchema}>
       {(formik) => (
         <Form style={{ height: '100%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1, overflow: 'scroll' }}>
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="title"
                 label="Title"
                 type="text"
@@ -77,7 +79,7 @@ const AssignmentCreate = ({ close }) => {
 
               <FormControl variant="filled">
                 <InputLabel>Type</InputLabel>
-                <Field name="type" component={Select}>
+                <Field name="type" component={FormikSelect}>
                   <MenuItem value=""><em>None</em></MenuItem>
                   {ASSIGNMENT_TYPES.map(({ value, label }) => (
                     <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -87,7 +89,7 @@ const AssignmentCreate = ({ close }) => {
 
               <FormControl variant="filled">
                 <InputLabel>Course</InputLabel>
-                <Field name="courseId" component={Select}>
+                <Field name="courseId" component={FormikSelect}>
                   <MenuItem value=""><em>None</em></MenuItem>
                   {data.map(({ id, code }) => (
                     <MenuItem key={id} value={id}>{code}</MenuItem>
@@ -96,18 +98,21 @@ const AssignmentCreate = ({ close }) => {
               </FormControl>
 
               <Field
-                component={DatePicker}
+                component={FormikDatePicker}
                 name="deadlineTime"
                 label="Deadline Date"
                 slotProps={{
                   textField: {
                     readOnly: true,
                   },
+                  actionBar: {
+                    actions: ['clear'],
+                  },
                 }}
               />
 
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="description"
                 label="Description"
                 type="text"

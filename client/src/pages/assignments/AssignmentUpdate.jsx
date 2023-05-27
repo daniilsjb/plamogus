@@ -24,7 +24,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUncheckedOutlined';
 
 import { Field, Form, Formik } from 'formik';
-import { LiveDatePicker, LiveField, LiveSelect, TextField } from '../../components/form-bindings';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker/DatePicker';
 
 import dayjs from 'dayjs';
@@ -35,6 +34,10 @@ import { findAllCourses } from '../../api/course';
 import { removeNewlines } from '../../common/string';
 import Paper from '@mui/material/Paper';
 import { completeStep, createStep, deleteStep, findAllSteps, uncompleteStep, updateStep } from '../../api/step';
+import FormikLiveDatePicker from '../../components/forms/FormikLiveDatePicker';
+import FormikLiveTextField from '../../components/forms/FormikLiveTextField';
+import FormikLiveSelect from '../../components/forms/FormikLiveSelect';
+import FormikTextField from '../../components/forms/FormikTextField';
 
 const DeletionDialog = ({ open, setOpen, assignment, closeDetails }) => {
   const queryClient = useQueryClient();
@@ -173,7 +176,6 @@ const AssignmentSteps = ({ assignment }) => {
   }
 
   if (status === 'error') {
-    // TODO: Redirect to an error page.
     return <Typography>Oops! An error occurred.</Typography>;
   }
 
@@ -207,9 +209,9 @@ const StepForm = ({ assignment }) => {
         value={value}
         multiline
         onChange={(event) => setValue(removeNewlines(event.target.value))}
-        onKeyDown={(event) => {
+        onKeyDown={async (event) => {
           if (event.key === 'Enter') {
-            onSubmit();
+            await onSubmit();
           }
         }}
         variant="standard"
@@ -249,7 +251,7 @@ const AssignmentUpdate = ({ close, assignment }) => {
     description: assignment.description || '',
   };
 
-  const onSubmit = async (values) => {
+  const handleSubmit = async (values) => {
     const transformed = {
       ...values,
       type: values.type !== '' ? values.type : null,
@@ -265,18 +267,17 @@ const AssignmentUpdate = ({ close, assignment }) => {
   }
 
   if (status === 'error') {
-    // TODO: Redirect to an error page.
     return <Typography>Oops! An error occurred.</Typography>;
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={AssignmentSchema} enableReinitialize>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={AssignmentSchema} enableReinitialize>
       {(formik) => (
         <Form style={{ height: '100%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, overflow: 'scroll', flexGrow: 1 }}>
-              <LiveField
-                component={TextField}
+              <FormikLiveTextField
+                component={FormikTextField}
                 name="title"
                 label="Title"
                 type="text"
@@ -290,7 +291,7 @@ const AssignmentUpdate = ({ close, assignment }) => {
 
               <FormControl variant="filled">
                 <InputLabel>Type</InputLabel>
-                <Field name="type" component={LiveSelect}>
+                <Field name="type" component={FormikLiveSelect}>
                   <MenuItem value=""><em>None</em></MenuItem>
                   {ASSIGNMENT_TYPES.map(({ value, label }) => (
                     <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -300,7 +301,7 @@ const AssignmentUpdate = ({ close, assignment }) => {
 
               <FormControl variant="filled">
                 <InputLabel>Course</InputLabel>
-                <Field name="courseId" component={LiveSelect}>
+                <Field name="courseId" component={FormikLiveSelect}>
                   <MenuItem value=""><em>None</em></MenuItem>
                   {data.map(({ id, code }) => (
                     <MenuItem key={id} value={id}>{code}</MenuItem>
@@ -315,18 +316,21 @@ const AssignmentUpdate = ({ close, assignment }) => {
               />
 
               <Field
-                component={LiveDatePicker}
+                component={FormikLiveDatePicker}
                 name="deadlineTime"
                 label="Deadline Date"
                 slotProps={{
                   textField: {
                     readOnly: true,
                   },
+                  actionBar: {
+                    actions: ['clear'],
+                  },
                 }}
               />
 
-              <LiveField
-                component={TextField}
+              <FormikLiveTextField
+                component={FormikTextField}
                 name="description"
                 label="Description"
                 type="text"

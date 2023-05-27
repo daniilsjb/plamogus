@@ -37,25 +37,8 @@ import { findAllAssignments } from '../../api/assignment';
 import { partition } from '../../common/functional';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
 import Chip from '@mui/material/Chip';
-
-const ResponsiveIconButtonStyled = styled(Button, {
-  shouldForwardProp: (prop) => prop !== 'breakpoint',
-})(({ theme, breakpoint }) => ({
-  fontSize: theme.typography.pxToRem(14),
-  minWidth: 'auto',
-
-  [theme.breakpoints.down(breakpoint)]: {
-    minWidth: 32,
-    paddingLeft: 8,
-    paddingRight: 8,
-    '& .MuiButton-startIcon': {
-      margin: 0,
-    },
-    '& .buttonText': {
-      display: 'none',
-    },
-  },
-}));
+import { CircularProgress } from '@mui/material';
+import ResponsiveIconButton from '../../components/ResponsiveIconButton';
 
 const FILTERING_OPTIONS = [
   {
@@ -161,11 +144,13 @@ const SortButton = ({
   return (
     <div>
       <Tooltip title="Change Ordering">
-        <ResponsiveIconButtonStyled
-          startIcon={<SortIcon/>} onClick={ev => setAnchorEl(ev.currentTarget)} breakpoint="sm"
+        <ResponsiveIconButton
+          startIcon={<SortIcon/>}
+          onClick={ev => setAnchorEl(ev.currentTarget)}
+          breakpoint="sm"
         >
           <span className="buttonText">Sort</span>
-        </ResponsiveIconButtonStyled>
+        </ResponsiveIconButton>
       </Tooltip>
 
       <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
@@ -212,11 +197,13 @@ const FilterByTypeButton = ({ criterion, setCriterion }) => {
   return (
     <div>
       <Tooltip title="Filter by Type">
-        <ResponsiveIconButtonStyled
-          startIcon={<HistoryEduIcon/>} onClick={ev => setAnchorEl(ev.currentTarget)} breakpoint="sm"
+        <ResponsiveIconButton
+          startIcon={<HistoryEduIcon/>}
+          onClick={ev => setAnchorEl(ev.currentTarget)}
+          breakpoint="sm"
         >
           <span className="buttonText">Type</span>
-        </ResponsiveIconButtonStyled>
+        </ResponsiveIconButton>
       </Tooltip>
 
       <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
@@ -249,7 +236,6 @@ const FilterByCourseButton = ({ criterion, setCriterion }) => {
   }
 
   if (status === 'error') {
-    // TODO: Redirect to an error page.
     return <Typography>Oops! An error occurred.</Typography>;
   }
 
@@ -260,11 +246,13 @@ const FilterByCourseButton = ({ criterion, setCriterion }) => {
   return (
     <div>
       <Tooltip title="Filter by Course">
-        <ResponsiveIconButtonStyled
-          startIcon={<SchoolIcon/>} onClick={ev => setAnchorEl(ev.currentTarget)} breakpoint="sm"
+        <ResponsiveIconButton
+          startIcon={<SchoolIcon/>}
+          onClick={ev => setAnchorEl(ev.currentTarget)}
+          breakpoint="sm"
         >
           <span className="buttonText">Course</span>
-        </ResponsiveIconButtonStyled>
+        </ResponsiveIconButton>
       </Tooltip>
 
       <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
@@ -291,19 +279,12 @@ const ActionBar = ({
   const isFilteringApplied = !!typeCriterion || !!courseCriterion;
 
   return (
-    // TODO: Shrink spacing between items on smaller screens.
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2, md: 3 }, alignItems: 'center' }}>
         <NewButton onClick={handleCreate}/>
         <SearchBar
           criterion={titleCriterion}
           setCriterion={setTitleCriterion}
-        />
-        <SortButton
-          sortingCriterion={sortingCriterion}
-          setSortingCriterion={setSortingCriterion}
-          sortingDirection={sortingDirection}
-          setSortingDirection={setSortingDirection}
         />
         <FilterByTypeButton
           criterion={typeCriterion}
@@ -312,6 +293,12 @@ const ActionBar = ({
         <FilterByCourseButton
           criterion={courseCriterion}
           setCriterion={setCourseCriterion}
+        />
+        <SortButton
+          sortingCriterion={sortingCriterion}
+          setSortingCriterion={setSortingCriterion}
+          sortingDirection={sortingDirection}
+          setSortingDirection={setSortingDirection}
         />
       </Box>
 
@@ -454,11 +441,14 @@ const AssignmentOverview = ({ selectedAction, setSelectedAction, selectedAssignm
   });
 
   if (status === 'loading') {
-    return null;
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress/>
+      </Box>
+    );
   }
 
   if (status === 'error') {
-    // TODO: Redirect to an error page.
     return <Typography>Oops! An error occurred.</Typography>;
   }
 

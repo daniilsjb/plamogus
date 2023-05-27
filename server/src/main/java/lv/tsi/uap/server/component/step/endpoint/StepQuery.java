@@ -1,6 +1,8 @@
 package lv.tsi.uap.server.component.step.endpoint;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 

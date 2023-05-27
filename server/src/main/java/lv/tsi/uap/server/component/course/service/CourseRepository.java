@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID>, JpaSpecificationExecutor<Course> {
 
+    Optional<Course> findByCode(String code);
+
 }

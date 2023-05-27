@@ -1,9 +1,7 @@
 package lv.tsi.uap.server.component.assignment.service;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lv.tsi.uap.server.component.course.service.Course;
 import lv.tsi.uap.server.component.step.service.Step;
 

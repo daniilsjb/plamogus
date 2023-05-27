@@ -3,10 +3,15 @@ package lv.tsi.uap.server.component.dashboard.service;
 import lombok.RequiredArgsConstructor;
 import lv.tsi.uap.server.component.assignment.service.Assignment;
 import lv.tsi.uap.server.component.assignment.service.AssignmentRepository;
+import lv.tsi.uap.server.component.course.service.Course;
+import lv.tsi.uap.server.component.course.service.CourseRepository;
 import lv.tsi.uap.server.component.dashboard.endpoint.DashboardResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -14,22 +19,37 @@ import java.util.stream.Collectors;
 public class DefaultDashboardService implements DashboardService {
 
     private final AssignmentRepository assignmentRepository;
+    private final CourseRepository courseRepository;
+    private final Supplier<Instant> instantSupplier;
 
     @Override
     public DashboardResponse index() {
         final var assignments = assignmentRepository.findAll();
+        return DashboardResponse.builder()
+            .pendingCount(countPendingAssignments(assignments))
+            .overdueCount(countOverdueAssignments(assignments))
+            .types(countAssignmentsByType(assignments))
+            .semesters(countAssignmentsBySemester(assignments))
+            .deadlines(countAssignmentsByDeadline(assignments))
+            .build();
+    }
 
-        final var pendingCount = assignments.stream()
+    private Long countPendingAssignments(List<Assignment> assignments) {
+        return assignments.stream()
             .filter(it -> !it.getCompleted())
             .count();
+    }
 
-        final var overdueCount = assignments.stream()
+    private Long countOverdueAssignments(List<Assignment> assignments) {
+        return assignments.stream()
             .filter(it -> !it.getCompleted() &&
                 it.getDeadlineTime() != null &&
-                it.getDeadlineTime().isBefore(Instant.now()))
+                it.getDeadlineTime().isBefore(instantSupplier.get()))
             .count();
+    }
 
-        final var typeFrequencies = assignments.stream()
+    private List<DashboardResponse.TypeFrequency> countAssignmentsByType(List<Assignment> assignments) {
+        return assignments.stream()
             .filter(it -> it.getType() != null)
             .collect(Collectors.groupingBy(Assignment::getType, Collectors.counting()))
             .entrySet().stream()
@@ -38,33 +58,41 @@ public class DefaultDashboardService implements DashboardService {
                 .count(it.getValue())
                 .build())
             .toList();
+    }
 
-        final var semesterFrequencies = assignmentRepository.countAssignmentsBySemester()
-            .stream()
+    private List<DashboardResponse.SemesterFrequency> countAssignmentsBySemester(List<Assignment> assignments) {
+        final var courseToSemester = courseRepository.findAll().stream()
+            .filter(it -> it.getSemester() != null)
+            .collect(Collectors.toMap(Course::getId, Course::getSemester));
+
+        final var semesterFrequencies = new HashMap<Integer, Long>();
+        for (final var assignment : assignments) {
+            final var course = assignment.getCourse();
+            if (course != null && courseToSemester.containsKey(course.getId())) {
+                final var semester = courseToSemester.get(course.getId());
+                semesterFrequencies.merge(semester, 1L, Long::sum);
+            }
+        }
+
+        return semesterFrequencies.entrySet().stream()
             .map(it -> DashboardResponse.SemesterFrequency.builder()
-                .semester((Integer)it[0])
-                .count((Long)it[1])
+                .semester(it.getKey())
+                .count(it.getValue())
                 .build())
             .toList();
+    }
 
-        final var deadlineFrequencies = assignments.stream()
+    private List<DashboardResponse.DeadlineFrequency> countAssignmentsByDeadline(List<Assignment> assignments) {
+        return assignments.stream()
             .filter(it -> !it.getCompleted() && it.getDeadlineTime() != null)
             .collect(Collectors.groupingBy(Assignment::getDeadlineTime, Collectors.counting()))
             .entrySet().stream()
             .map(it -> DashboardResponse.DeadlineFrequency.builder()
                 .deadlineTime(it.getKey())
-                .overdue(it.getKey().isBefore(Instant.now()))
+                .overdue(it.getKey().isBefore(instantSupplier.get()))
                 .count(it.getValue())
                 .build())
             .toList();
-
-        return DashboardResponse.builder()
-            .pendingCount(pendingCount)
-            .overdueCount(overdueCount)
-            .types(typeFrequencies)
-            .semesters(semesterFrequencies)
-            .deadlines(deadlineFrequencies)
-            .build();
     }
 
 }

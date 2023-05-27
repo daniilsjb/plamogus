@@ -1,4 +1,5 @@
 ### Create a new assignment
+
 POST {{uap-host}}/assignments
 Content-Type: application/json
 

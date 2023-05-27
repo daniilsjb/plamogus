@@ -3,10 +3,10 @@ import { createCourse } from '../../api/course';
 import { Field, Form, Formik } from 'formik';
 import CourseSchema from '../../schemas/course';
 import Box from '@mui/material/Box';
-import { TextField } from '../../components/form-bindings';
 import { removeNewlines, removeNonDigits, removeWhitespace } from '../../common/string';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import FormikTextField from '../../components/forms/FormikTextField';
 
 const CourseCreate = ({ close }) => {
   const queryClient = useQueryClient();
@@ -24,25 +24,23 @@ const CourseCreate = ({ close }) => {
     description: '',
   };
 
-  const onSubmit = async (values, formik) => {
+  const handleSubmit = async (values, formik) => {
     try {
       await mutateAsync(values);
+      formik.resetForm();
     } catch (error) {
-      // TODO: The error handling has to be more specific here.
-      if (error?.response.status === 500) {
-        formik.setFieldError('code', 'A course with this code already exists.');
-      }
+      formik.setFieldError('code', 'A course with this code already exists.');
     }
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={CourseSchema}>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={CourseSchema}>
       {(formik) => (
         <Form style={{ height: '100%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1, overflow: 'scroll' }}>
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="code"
                 label="Code"
                 type="text"
@@ -52,7 +50,7 @@ const CourseCreate = ({ close }) => {
               />
 
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="title"
                 label="Title"
                 type="text"
@@ -63,7 +61,7 @@ const CourseCreate = ({ close }) => {
               />
 
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="semester"
                 label="Semester"
                 type="text"
@@ -71,7 +69,7 @@ const CourseCreate = ({ close }) => {
               />
 
               <Field
-                component={TextField}
+                component={FormikTextField}
                 name="description"
                 label="Description"
                 type="text"

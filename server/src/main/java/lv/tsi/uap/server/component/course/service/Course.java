@@ -1,9 +1,7 @@
 package lv.tsi.uap.server.component.course.service;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lv.tsi.uap.server.component.assignment.service.Assignment;
 
 import java.util.List;
@@ -12,13 +10,15 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Course {
 
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 8, unique = true)
     private String code;
 
     @Column(nullable = false, length = 64)

@@ -17,45 +17,13 @@ import {
   YAxis,
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
-import { Badge, Grid } from '@mui/material';
+import { Badge, CircularProgress, Grid } from '@mui/material';
 
 import { DateCalendar, PickersDay } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useQuery } from 'react-query';
 import { getDashboard } from '../../api/dashboard';
 import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
-
-// const data = {
-//   pending: 0,
-//   overdue: 4,
-//   typeDistribution: [
-//     { name: 'Practice', count: 3 },
-//     { name: 'Homework', count: 7 },
-//     { name: 'Lab', count: 8 },
-//     { name: 'Report', count: 5 },
-//     { name: 'Project', count: 1 },
-//     { name: 'Test', count: 9 },
-//     { name: 'Presentation', count: 3 },
-//     { name: 'Other', count: 2 },
-//   ],
-//   semesterDistribution: [
-//     { semester: 1, count: 5 },
-//     { semester: 2, count: 8 },
-//     { semester: 3, count: 2 },
-//     { semester: 4, count: 15 },
-//     { semester: 5, count: 4 },
-//     { semester: 6, count: 7 },
-//     { semester: 7, count: 16 },
-//     { semester: 8, count: 6 },
-//   ],
-//   deadlines: [
-//     { count: 1, deadlineTime: '2023-05-04T21:00:00.000Z' },
-//     { count: 2, deadlineTime: '2023-05-06T21:00:00.000Z' },
-//     { count: 3, deadlineTime: '2023-05-08T21:00:00.000Z' },
-//     { count: 2, deadlineTime: '2023-05-23T21:00:00.000Z' },
-//     { count: 1, deadlineTime: '2023-06-16T21:00:00.000Z' },
-//   ],
-// };
 
 const PendingAssignments = ({ pending }) => {
   return (
@@ -91,7 +59,7 @@ const OverdueAssignments = ({ overdue }) => {
   );
 };
 
-const TypeDistributionChart = ({ data }) => {
+const TypeDistribution = ({ data }) => {
   const theme = useTheme();
 
   if (data.length < 2) {
@@ -121,7 +89,7 @@ const TypeDistributionChart = ({ data }) => {
   );
 };
 
-const SimpleLineChart = ({ data }) => {
+const SemesterDistribution = ({ data }) => {
   const theme = useTheme();
   if (data.length < 2) {
     return <Typography>Not enough data. Add more assignments first!</Typography>
@@ -180,11 +148,14 @@ const Dashboard = () => {
   });
 
   if (status === 'loading') {
-    return null;
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress/>
+      </Box>
+    );
   }
 
   if (status === 'error') {
-    // TODO: Redirect to an error page.
     return <Typography>Oops! Something went wrong.</Typography>
   }
 
@@ -231,12 +202,12 @@ const Dashboard = () => {
           gap: { xs: 1, sm: 2, md: 3 },
         }}>
           <Typography variant="h5">Semester Insights</Typography>
-          <SimpleLineChart data={data.semesters}/>
+          <SemesterDistribution data={data.semesters}/>
         </Paper>
       </Grid>
 
       {/* ROW 2 */}
-      <Grid item xs={12} sm={12} md={5}>
+      <Grid item xs={12} sm={12} lg={5}>
         <Paper sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -250,7 +221,7 @@ const Dashboard = () => {
           <AssignmentCalendar data={data.deadlines}/>
         </Paper>
       </Grid>
-      <Grid item xs={12} sm={12} md={7}>
+      <Grid item xs={12} sm={12} lg={7}>
         <Paper sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -261,7 +232,7 @@ const Dashboard = () => {
           gap: { xs: 1, sm: 2, md: 3 },
         }}>
           <Typography variant="h5">Assignment Distribution</Typography>
-          <TypeDistributionChart data={data.types}/>
+          <TypeDistribution data={data.types}/>
         </Paper>
       </Grid>
     </Grid>

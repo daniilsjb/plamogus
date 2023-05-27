@@ -1,19 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import Box from '@mui/material/Box';
+
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Dashboard from './pages/dashboard/Dashboard';
-import Assignments from './pages/assignments/Index';
-import Courses from './pages/courses/Courses';
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { ColorModeContext, useColorMode } from './theme';
+
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+
+import Box from '@mui/material/Box';
+
+import Assignments from './pages/assignments/Index';
+import Courses from './pages/courses/Index';
+import Dashboard from './pages/dashboard/Index';
 import NotFound from './pages/not-found/Index';
+import Error from './pages/error/Index';
+
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
   ({ theme, sidebarOpen }) => {
@@ -44,6 +50,7 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isSidebarTemporary = useMediaQuery(theme.breakpoints.down('md'));
 
+  // Automatically collapse sidebar when it becomes temporary.
   useEffect(() => {
     if (isSidebarTemporary) {
       setSidebarOpen(false);
@@ -70,6 +77,7 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Navigate to="/assignments" replace/>}/>
                   <Route path="/*" element={<NotFound/>}/>
+                  <Route path="/error" element={<Error/>}/>
                   <Route path="/dashboard" element={<Dashboard/>}/>
                   <Route path="/assignments" element={<Assignments/>}/>
                   <Route path="/courses" element={<Courses/>}/>

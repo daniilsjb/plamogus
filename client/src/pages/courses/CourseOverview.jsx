@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
-import { Icon } from '@mui/material';
+import { CircularProgress, Icon } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import TableContainer from '@mui/material/TableContainer';
@@ -21,6 +21,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TableBody from '@mui/material/TableBody';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
 
 const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'detailsOpen' })(
   ({ theme, detailsOpen }) => {
@@ -135,6 +136,8 @@ const CourseFilterEmpty = () => {
 };
 
 const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, setSelectedCourse }) => {
+  const navigate = useNavigate();
+
   const [searchValue, setSearchValue] = useState(null);
   const [searchingCriterion, setSearchingCriterion] = useState(null);
   const [sortingCriterion, setSortingCriterion] = useState(null);
@@ -163,11 +166,16 @@ const CourseOverview = ({ selectedAction, setSelectedAction, selectedCourse, set
   };
 
   if (status === 'loading') {
-    return null;
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress/>
+      </Box>
+    );
   }
 
   if (status === 'error') {
-    return <Typography>Oops! An error occurred.</Typography>;
+    navigate('/error');
+    return null;
   }
 
   return (

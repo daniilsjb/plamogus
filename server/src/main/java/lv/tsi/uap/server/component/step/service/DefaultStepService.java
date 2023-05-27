@@ -19,11 +19,7 @@ class DefaultStepService extends AbstractCrudService<Step, UUID, StepRepository>
     private final AssignmentRepository assignmentRepository;
     private final Supplier<UUID> uuidSupplier;
 
-    public DefaultStepService(
-        StepRepository repository,
-        AssignmentRepository assignmentRepository,
-        Supplier<UUID> uuidSupplier
-    ) {
+    public DefaultStepService(StepRepository repository, AssignmentRepository assignmentRepository, Supplier<UUID> uuidSupplier) {
         super(repository);
         this.assignmentRepository = assignmentRepository;
         this.uuidSupplier = uuidSupplier;

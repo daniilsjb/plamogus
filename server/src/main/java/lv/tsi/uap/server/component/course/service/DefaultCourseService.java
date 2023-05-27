@@ -5,7 +5,9 @@ import lv.tsi.uap.server.common.service.AbstractCrudService;
 import lv.tsi.uap.server.component.course.endpoint.CourseQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,8 +41,27 @@ class DefaultCourseService extends AbstractCrudService<Course, UUID, CourseRepos
 
     @Override
     public Course create(@NonNull Course entity) {
+        if (entity.getCode() != null && repository.findByCode(entity.getCode()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Course with code '%s' already exists."
+                .formatted(entity.getCode()));
+        }
+
         entity.setId(uuidSupplier.get());
         return repository.save(entity);
+    }
+
+    @Override
+    public Course update(@NonNull Course entity) {
+        if (entity.getCode() != null) {
+            repository.findByCode(entity.getCode()).ifPresent(it -> {
+                if (!it.getId().equals(entity.getId())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Course with code '%s' already exists."
+                        .formatted(entity.getCode()));
+                }
+            });
+        }
+
+        return super.update(entity);
     }
 
     @Override

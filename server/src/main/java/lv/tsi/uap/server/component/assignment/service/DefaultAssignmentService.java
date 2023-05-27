@@ -25,12 +25,7 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
     private final Supplier<UUID> uuidSupplier;
     private final Supplier<Instant> instantSupplier;
 
-    public DefaultAssignmentService(
-        AssignmentRepository repository,
-        CourseRepository courseRepository,
-        Supplier<UUID> uuidSupplier,
-        Supplier<Instant> instantSupplier
-    ) {
+    public DefaultAssignmentService(AssignmentRepository repository, CourseRepository courseRepository, Supplier<UUID> uuidSupplier, Supplier<Instant> instantSupplier) {
         super(repository);
         this.courseRepository = courseRepository;
         this.uuidSupplier = uuidSupplier;
@@ -49,7 +44,7 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
             : builder.equal(root.get("course").get("code"), courseCode);
     }
 
-    private static Specification<Assignment> hasTitleContaining(String title) {
+    private static Specification<Assignment> hasTitleLike(String title) {
         return (root, query, builder) -> (title == null)
             ? builder.conjunction()
             : builder.like(builder.lower(root.get("title")), "%" + title.toLowerCase() + "%");
@@ -77,7 +72,7 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
         }
 
         final var sort = Sort.by(direction, query.getOrderBy());
-        final var specification = where(hasTitleContaining(query.getTitle()))
+        final var specification = where(hasTitleLike(query.getTitle()))
             .and(hasCourse(query.getCourse()))
             .and(hasType(query.getType()));
 
