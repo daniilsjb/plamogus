@@ -1,4 +1,4 @@
-import { Field, useFormikContext } from 'formik';
+import { Field, useFormikContext } from "formik";
 
 const FormikLiveTextField = ({ submitOnBlur, submitOnEnter, children, form, field, ...props }) => {
   const formik = useFormikContext();
@@ -11,7 +11,7 @@ const FormikLiveTextField = ({ submitOnBlur, submitOnEnter, children, form, fiel
   };
 
   const handleKeyDown = async (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       if (submitOnEnter ?? true) {
         await formik.submitForm();
       }
@@ -21,7 +21,7 @@ const FormikLiveTextField = ({ submitOnBlur, submitOnEnter, children, form, fiel
   return (
     <Field onBlur={handleBlur} onKeyDown={handleKeyDown} {...props}>
       {children}
-    </Field >
+    </Field>
   );
 };
 

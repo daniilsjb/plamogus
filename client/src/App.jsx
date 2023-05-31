@@ -1,61 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import CssBaseline from '@mui/material/CssBaseline';
-import { styled } from '@mui/material/styles';
-import { ThemeProvider, useMediaQuery } from '@mui/material';
-import { ColorModeContext, useColorMode } from './theme';
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import { styled } from "@mui/material/styles";
+import { ThemeProvider, useMediaQuery } from "@mui/material";
 
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { QueryClient, QueryClientProvider } from "react-query";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 
-import Box from '@mui/material/Box';
-
-import Assignments from './pages/assignments/Index';
-import Courses from './pages/courses/Index';
-import Dashboard from './pages/dashboard/Index';
-import NotFound from './pages/not-found/Index';
-import Error from './pages/error/Index';
-
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'sidebarOpen' })(
-  ({ theme, sidebarOpen }) => {
-    const isSidebarTemporary = useMediaQuery(theme.breakpoints.down('md'));
-    return {
-      marginLeft: (isSidebarTemporary || !sidebarOpen) ? 0 : `${theme.width.navigationDrawer}px`,
-      ...(!isSidebarTemporary && {
-        ...(sidebarOpen ? {
-          transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-        } : {
-          transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-        }),
-      }),
-    };
-  },
-);
+import Assignments from "./pages/assignments/Index";
+import Courses from "./pages/courses/Index";
+import Dashboard from "./pages/dashboard/Index";
+import NotFound from "./pages/not-found/Index";
+import Error from "./pages/error/Index";
+import Sidebar from "./components/navigation/Sidebar";
+import Header from "./components/navigation/Header";
+import { ColorModeContext, useColorMode } from "./theme";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [theme, colorMode] = useColorMode();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const isSidebarTemporary = useMediaQuery(theme.breakpoints.down('md'));
-
-  // Automatically collapse sidebar when it becomes temporary.
-  useEffect(() => {
-    if (isSidebarTemporary) {
-      setSidebarOpen(false);
-    }
-  }, [isSidebarTemporary]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -64,15 +32,14 @@ const App = () => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <CssBaseline/>
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <Header setSidebarOpen={setSidebarOpen}/>
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              <Header setNavigationOpen={setSidebarOpen}/>
               <Main sx={{
-                display: 'flex',
+                display: "flex",
                 flex: 1,
                 minHeight: 0,
                 p: { xs: 1, sm: 2, md: 3 },
-                justifyContent: 'center',
-                overflow: 'auto',
+                overflow: "auto",
               }} sidebarOpen={sidebarOpen}>
                 <Routes>
                   <Route path="/" element={<Navigate to="/assignments" replace/>}/>
@@ -90,5 +57,27 @@ const App = () => {
     </QueryClientProvider>
   );
 };
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "sidebarOpen" })(
+  ({ theme, sidebarOpen }) => {
+    const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
+    return {
+      marginLeft: (isSidebarTemporary || !sidebarOpen) ? 0 : `${theme.width.navigationDrawer}px`,
+      ...(!isSidebarTemporary && {
+        ...(sidebarOpen ? {
+          transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        } : {
+          transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }),
+      }),
+    };
+  },
+);
 
 export default App;

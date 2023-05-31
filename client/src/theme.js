@@ -1,5 +1,5 @@
-import { createContext, useMemo, useState } from 'react';
-import { createTheme } from '@mui/material';
+import { createContext, useMemo, useState } from "react";
+import { createTheme } from "@mui/material";
 
 export const ColorModeContext = createContext({
   toggleColorMode: () => {
@@ -12,22 +12,29 @@ export const ColorModeContext = createContext({
 });
 
 export const useColorMode = () => {
-  const [mode, setMode] = useState('light');
+  const [mode, setMode] = useState("light");
   const colorMode = useMemo(() => ({
     toggleColorMode: () => {
-      setMode(prevState => (prevState === 'dark') ? 'light' : 'dark');
+      setMode(prevState => (prevState === "dark") ? "light" : "dark");
     },
   }), []);
 
   const theme = useMemo(() => createTheme({
-    palette: { mode },
-    components: {
-      MuiTextField: {
-        defaultProps: {
-          variant: 'filled',
-        },
-      },
+    palette: {
+      mode,
+      ...(mode === "light" ? {
+          primary: {
+            main: "#245ec2",
+          },
+          background: {
+            default: "#faf9f8",
+          },
+        } : {
+          // Dark theme looks fine by default.
+        }
+      ),
     },
+
     width: {
       navigationDrawer: 290,
       detailsDrawer: 360,

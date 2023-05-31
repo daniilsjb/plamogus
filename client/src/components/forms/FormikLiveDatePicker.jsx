@@ -1,4 +1,4 @@
-import { DatePicker } from '@mui/x-date-pickers/DatePicker/DatePicker';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker/DatePicker";
 
 const FormikLiveDatePicker = ({ field, form, ...props }) => {
   const { name, value } = field;
@@ -13,7 +13,7 @@ const FormikLiveDatePicker = ({ field, form, ...props }) => {
     <DatePicker
       slotProps={{
         actionBar: {
-          actions: ['clear'],
+          actions: ["clear"],
         },
       }}
       name={name}

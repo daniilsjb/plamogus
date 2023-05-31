@@ -1,40 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
+import Toolbar from "@mui/material/Toolbar";
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import Drawer from '@mui/material/Drawer';
-import Toolbar from '@mui/material/Toolbar';
-
-import CourseOverview from './CourseOverview';
-import CourseCreate from './CourseCreate';
-import CourseUpdate from './CourseUpdate';
-
-const CourseDetails = ({ selectedAction, setSelectedAction, selectedCourse, setSelectedCourse }) => {
-  const { breakpoints, width } = useTheme();
-  const isSidebarTemporary = useMediaQuery(breakpoints.down('md'));
-
-  const open = !!selectedAction;
-  const handleClose = () => {
-    setSelectedAction(null);
-    setSelectedCourse(null);
-  };
-
-  return (
-    <Drawer
-      anchor="right"
-      variant={isSidebarTemporary ? 'temporary' : 'persistent'}
-      open={open}
-      onClose={handleClose}
-      PaperProps={{
-        sx: { width: width.detailsDrawer, boxSizing: 'border-box', p: 3 },
-      }}
-    >
-      <Toolbar/>
-      {selectedAction === 'create' && <CourseCreate close={handleClose}/>}
-      {selectedAction === 'update' && <CourseUpdate close={handleClose} course={selectedCourse}/>}
-    </Drawer>
-  );
-};
+import CourseOverview from "./CourseOverview";
+import CourseCreate from "./CourseCreate";
+import CourseUpdate from "./CourseUpdate";
+import DetailsSidebar from "../../components/DetailsSidebar";
 
 const Courses = () => {
   // The details sidebar will contain different contents depending on which action
@@ -42,21 +12,49 @@ const Courses = () => {
   const [selectedAction, setSelectedAction] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
+  const handleCreate = () => {
+    setSelectedAction("create");
+    setSelectedCourse(null);
+  };
+
+  const handleSelect = (course) => {
+    setSelectedAction("update");
+    setSelectedCourse(course);
+  };
+
+  const handleClose = () => {
+    setSelectedAction(null);
+    setSelectedCourse(null);
+  };
+
   return <>
     <CourseOverview
-      selectedAction={selectedAction}
-      setSelectedAction={setSelectedAction}
+      detailsOpen={!!selectedAction}
+      handleCreate={handleCreate}
+      handleSelect={handleSelect}
       selectedCourse={selectedCourse}
-      setSelectedCourse={setSelectedCourse}
     />
 
     <CourseDetails
+      onClose={handleClose}
       selectedAction={selectedAction}
-      setSelectedAction={setSelectedAction}
       selectedCourse={selectedCourse}
-      setSelectedCourse={setSelectedCourse}
     />
   </>;
+};
+
+const CourseDetails = ({
+  onClose,
+  selectedAction,
+  selectedCourse,
+}) => {
+  return (
+    <DetailsSidebar open={!!selectedAction} onClose={onClose}>
+      <Toolbar/>
+      {selectedAction === "create" && <CourseCreate close={onClose}/>}
+      {selectedAction === "update" && <CourseUpdate close={onClose} course={selectedCourse}/>}
+    </DetailsSidebar>
+  );
 };
 
 export default Courses;

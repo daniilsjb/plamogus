@@ -1,33 +1,29 @@
-import { useMutation, useQueryClient } from 'react-query';
-import { deleteCourse, updateCourse } from '../../api/course';
-import { useState } from 'react';
-import { Form, Formik } from 'formik';
-import CourseSchema from '../../schemas/course';
-import Box from '@mui/material/Box';
-import { removeNewlines, removeNonDigits, removeWhitespace } from '../../common/string';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import FormikTextField from '../../components/forms/FormikTextField';
-import FormikLiveTextField from '../../components/forms/FormikLiveTextField';
+import { useState } from "react";
+
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+
+import { Form, Formik } from "formik";
+import FormikTextField from "../../components/forms/FormikTextField";
+import FormikLiveTextField from "../../components/forms/FormikLiveTextField";
+
+import { useCourseDeletion, useCourseUpdate } from "../../mutations/course";
+import { removeNewlines, removeNonDigits, removeWhitespace } from "../../common/string";
+import courseSchema from "../../schemas/course";
 
 const DeletionDialog = ({ open, setOpen, course, closeDetails }) => {
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationFn: deleteCourse,
-    onSuccess: () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['courses'] }),
-      queryClient.invalidateQueries({ queryKey: ['assignments'] }),
-    ]),
-  });
+  const deletion = useCourseDeletion();
 
   const closeSelf = () => {
     setOpen(false);
@@ -40,7 +36,7 @@ const DeletionDialog = ({ open, setOpen, course, closeDetails }) => {
   const onDelete = () => {
     closeSelf();
     closeDetails();
-    mutate(course.id);
+    deletion.mutate(course.id);
   };
 
   return (
@@ -60,63 +56,61 @@ const DeletionDialog = ({ open, setOpen, course, closeDetails }) => {
 };
 
 const CourseUpdate = ({ close, course }) => {
-  const queryClient = useQueryClient();
-  const { mutateAsync } = useMutation({
-    mutationFn: updateCourse,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['courses'] });
-    },
-  });
+  const update = useCourseUpdate();
 
   const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
 
   const initialValues = {
-    code: course.code || '',
-    title: course.title || '',
-    semester: course.semester || '',
-    description: course.description || '',
+    code: course.code || "",
+    title: course.title || "",
+    semester: course.semester || "",
+    description: course.description || "",
   };
 
   const handleSubmit = async (values, formik) => {
     try {
-      await mutateAsync({ id: course.id, ...values });
+      await update.mutateAsync({ id: course.id, ...values });
     } catch (error) {
-      formik.setFieldError('code', 'A course with this code already exists.');
+      formik.setFieldError("code", "A course with this code already exists.");
     }
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={CourseSchema} enableReinitialize>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={courseSchema} enableReinitialize>
       {(formik) => (
-        <Form style={{ height: '100%' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, overflow: 'scroll', flexGrow: 1 }}>
+        <Form style={{ height: "100%" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, overflow: "scroll", flexGrow: 1 }}>
               <FormikLiveTextField
+                variant="filled"
                 component={FormikTextField}
                 name="code"
                 label="Code"
                 type="text"
-                onChange={e => formik.setFieldValue('code', removeWhitespace(e.target.value))}
+                onChange={e => formik.setFieldValue("code", removeWhitespace(e.target.value))}
               />
 
               <FormikLiveTextField
+                variant="filled"
                 component={FormikTextField}
                 name="title"
                 label="Title"
                 type="text"
                 multiline
-                onChange={e => formik.setFieldValue('title', removeNewlines(e.target.value))}
+                onChange={e => formik.setFieldValue("title", removeNewlines(e.target.value))}
               />
 
               <FormikLiveTextField
+                variant="filled"
                 component={FormikTextField}
                 name="semester"
                 label="Semester"
                 type="text"
-                onChange={e => formik.setFieldValue('semester', removeNonDigits(e.target.value))}
+                onChange={e => formik.setFieldValue("semester", removeNonDigits(e.target.value))}
               />
 
               <FormikLiveTextField
+                variant="filled"
                 component={FormikTextField}
                 name="description"
                 label="Description"
@@ -128,7 +122,7 @@ const CourseUpdate = ({ close, course }) => {
             </Box>
 
             <Divider/>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
               <Tooltip title="Hide Sidebar">
                 <IconButton onClick={close}>
                   <KeyboardDoubleArrowRightIcon/>

@@ -1,12 +1,12 @@
-import client from './client/config';
+import client from "./client/config";
 
 export const findAllCourses = async (params) => {
-  const response = await client.get('/courses', { params });
+  const response = await client.get("/courses", { params });
   return response.data;
 };
 
 export const createCourse = async (course) => {
-  const response = await client.post('/courses', course);
+  const response = await client.post("/courses", course);
   return response.data;
 };
 

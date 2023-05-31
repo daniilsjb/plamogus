@@ -1,9 +1,16 @@
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
+import { useTheme } from "@mui/material/styles";
 
-import EventIcon from '@mui/icons-material/Event';
-import EventBusyIcon from '@mui/icons-material/EventBusy';
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Badge from "@mui/material/Badge";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import { DateCalendar, PickersDay } from "@mui/x-date-pickers";
+
+import EventIcon from "@mui/icons-material/Event";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
+
 import {
   Bar,
   BarChart,
@@ -15,23 +22,21 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts';
-import { useTheme } from '@mui/material/styles';
-import { Badge, CircularProgress, Grid } from '@mui/material';
+} from "recharts";
 
-import { DateCalendar, PickersDay } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-import { useQuery } from 'react-query';
-import { getDashboard } from '../../api/dashboard';
-import ASSIGNMENT_TYPES from '../../schemas/assignment-types';
+import dayjs from "dayjs";
+
+import { useQuery } from "react-query";
+import { getDashboard } from "../../api/dashboard";
+import { ASSIGNMENT_TYPES } from "../../common/constants";
 
 const PendingAssignments = ({ pending }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, p: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, p: 3 }}>
       <Typography variant="h2" align="center">{pending}</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Typography variant="h5" align="center">Assignments are pending</Typography>
-        <EventIcon sx={{ color: 'primary.main' }}/>
+        <EventIcon sx={{ color: "primary.main" }}/>
       </Box>
       {pending === 0 ? (
         <Typography variant="body2" align="center">Wow! You&apos;re really doing well, amazing job!</Typography>
@@ -44,11 +49,11 @@ const PendingAssignments = ({ pending }) => {
 
 const OverdueAssignments = ({ overdue }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, p: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, p: 3 }}>
       <Typography variant="h2" align="center">{overdue}</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Typography variant="h5" align="center">Assignments are overdue</Typography>
-        <EventBusyIcon sx={{ color: 'error.main' }}/>
+        <EventBusyIcon sx={{ color: "error.main" }}/>
       </Box>
       {overdue === 0 ? (
         <Typography variant="body2" align="center">Great work! Relax and enjoy your time.</Typography>
@@ -63,13 +68,13 @@ const TypeDistribution = ({ data }) => {
   const theme = useTheme();
 
   if (data.length < 2) {
-    return <Typography>Not enough data. Add more assignments first!</Typography>
+    return <Typography>Not enough data. Add more assignments first!</Typography>;
   }
 
   data = data.map(({ type, count }) => ({
     label: ASSIGNMENT_TYPES.find(it => it.value === type).label,
     count: count,
-  }))
+  }));
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -79,11 +84,11 @@ const TypeDistribution = ({ data }) => {
         <YAxis type="category" dataKey="label" width={100}/>
         <Tooltip
           labelFormatter={(value) => `Type: ${value}`}
-          formatter={(value) => [value, 'Total Count']}
+          formatter={(value) => [value, "Total Count"]}
           separator=": "
         />
         <Bar dataKey="count" fill={theme.palette.primary.main}/>
-        <Legend formatter={() => 'Assignments'}/>
+        <Legend formatter={() => "Assignments"}/>
       </BarChart>
     </ResponsiveContainer>
   );
@@ -92,7 +97,7 @@ const TypeDistribution = ({ data }) => {
 const SemesterDistribution = ({ data }) => {
   const theme = useTheme();
   if (data.length < 2) {
-    return <Typography>Not enough data. Add more assignments first!</Typography>
+    return <Typography>Not enough data. Add more assignments first!</Typography>;
   }
 
   return (
@@ -103,11 +108,11 @@ const SemesterDistribution = ({ data }) => {
         <YAxis/>
         <Tooltip
           labelFormatter={(value) => `Semester: ${value}`}
-          formatter={(value) => [value, 'Assignments']}
+          formatter={(value) => [value, "Assignments"]}
           separator=": "
         />
         <Line type="monotone" dataKey="count" stroke={theme.palette.primary.main}/>
-        <Legend formatter={() => 'Assignments'}/>
+        <Legend formatter={() => "Assignments"}/>
       </LineChart>
     </ResponsiveContainer>
   );
@@ -115,12 +120,12 @@ const SemesterDistribution = ({ data }) => {
 
 const AssignmentDay = ({ data, day, outsideCurrentMonth, ...props }) => {
   const entry = !outsideCurrentMonth ? data.find(it => dayjs(it.deadlineTime)
-    .startOf('date')
-    .toISOString() === day.toISOString()
+    .startOf("date")
+    .toISOString() === day.toISOString(),
   ) : null;
 
   const count = entry?.count ?? 0;
-  const color = entry?.overdue ? 'error' : 'primary';
+  const color = entry?.overdue ? "error" : "primary";
 
   return (
     <Badge key={day.toString()} overlap="circular" color={color} badgeContent={count}>
@@ -135,7 +140,7 @@ const AssignmentCalendar = ({ data }) => {
       readOnly
       slots={{ day: AssignmentDay }}
       slotProps={{
-        day: { data }
+        day: { data },
       }}
     />
   );
@@ -143,20 +148,20 @@ const AssignmentCalendar = ({ data }) => {
 
 const Dashboard = () => {
   const { status, data } = useQuery({
-    queryKey: ['dashboard', 'assignments', 'courses'],
+    queryKey: ["dashboard", "assignments", "courses"],
     queryFn: getDashboard,
   });
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <CircularProgress/>
       </Box>
     );
   }
 
-  if (status === 'error') {
-    return <Typography>Oops! Something went wrong.</Typography>
+  if (status === "error") {
+    return <Typography>Oops! Something went wrong.</Typography>;
   }
 
   return (
@@ -165,11 +170,11 @@ const Dashboard = () => {
       <Grid item container xs={12} sm={12} md={12} lg={4} spacing={3}>
         <Grid item xs={12} sm={6} lg={12}>
           <Paper sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
             p: 1,
             gap: { xs: 1, sm: 2, md: 3 },
           }}>
@@ -178,11 +183,11 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} sm={6} lg={12}>
           <Paper sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
             p: 1,
             gap: { xs: 1, sm: 2, md: 3 },
           }}>
@@ -193,11 +198,11 @@ const Dashboard = () => {
 
       <Grid item xs={12} sm={12} md={12} lg={8}>
         <Paper sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
           p: 3,
           gap: { xs: 1, sm: 2, md: 3 },
         }}>
@@ -209,11 +214,11 @@ const Dashboard = () => {
       {/* ROW 2 */}
       <Grid item xs={12} sm={12} lg={5}>
         <Paper sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
           p: 3,
           gap: { xs: 1, sm: 2, md: 3 },
         }}>
@@ -223,11 +228,11 @@ const Dashboard = () => {
       </Grid>
       <Grid item xs={12} sm={12} lg={7}>
         <Paper sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
           p: 3,
           gap: { xs: 1, sm: 2, md: 3 },
         }}>

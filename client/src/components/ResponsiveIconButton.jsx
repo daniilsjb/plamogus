@@ -1,23 +1,24 @@
-import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
+import { styled } from "@mui/material/styles";
+import Button from "@mui/material/Button";
 
-const ResponsiveIconButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== 'breakpoint',
-})(({ theme, breakpoint }) => ({
-  fontSize: theme.typography.pxToRem(14),
-  minWidth: 'auto',
+// Based on: https://hashnode.blainegarrett.com/snippet-material-ui-responsive-icon-button
+const ResponsiveIconButton = styled(Button, { shouldForwardProp: prop => prop !== "breakpoint" })(
+  ({ theme, breakpoint }) => ({
+    fontSize: theme.typography.pxToRem(14),
+    minWidth: "auto",
 
-  [theme.breakpoints.down(breakpoint)]: {
-    minWidth: 32,
-    paddingLeft: 8,
-    paddingRight: 8,
-    '& .MuiButton-startIcon': {
-      margin: 0,
+    [theme.breakpoints.down(breakpoint)]: {
+      minWidth: 32,
+      paddingLeft: 8,
+      paddingRight: 8,
+      "& .MuiButton-startIcon": {
+        margin: 0,
+      },
+      "& .buttonText": {
+        display: "none",
+      },
     },
-    '& .buttonText': {
-      display: 'none',
-    },
-  },
-}));
+  }),
+);
 
 export default ResponsiveIconButton;

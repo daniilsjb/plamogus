@@ -1,4 +1,4 @@
-import client from './client/config';
+import client from "./client/config";
 
 export const findAllSteps = async (assignmentId) => {
   const response = await client.get(`/assignments/${assignmentId}/steps`);
@@ -28,4 +28,12 @@ export const completeStep = async (id) => {
 export const uncompleteStep = async (id) => {
   const response = await client.delete(`/steps/${id}/completion`);
   return response.data;
+};
+
+export const toggleStepCompletion = async (step) => {
+  if (!step.completed) {
+    return completeStep(step.id);
+  } else {
+    return uncompleteStep(step.id);
+  }
 };

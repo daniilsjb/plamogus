@@ -1,4 +1,4 @@
-import Select from '@mui/material/Select';
+import Select from "@mui/material/Select";
 
 const FormikLiveSelect = ({ children, form, field }) => {
   const { name, value } = field;
@@ -14,6 +14,6 @@ const FormikLiveSelect = ({ children, form, field }) => {
       {children}
     </Select>
   );
-}
+};
 
 export default FormikLiveSelect;
