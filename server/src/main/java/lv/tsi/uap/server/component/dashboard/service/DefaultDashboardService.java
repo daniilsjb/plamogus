@@ -41,10 +41,11 @@ public class DefaultDashboardService implements DashboardService {
     }
 
     private Long countOverdueAssignments(List<Assignment> assignments) {
+        final var now = instantSupplier.get();
         return assignments.stream()
             .filter(it -> !it.getCompleted() &&
                 it.getDeadlineTime() != null &&
-                it.getDeadlineTime().isBefore(instantSupplier.get()))
+                it.getDeadlineTime().isBefore(now))
             .count();
     }
 
@@ -83,13 +84,14 @@ public class DefaultDashboardService implements DashboardService {
     }
 
     private List<DashboardResponse.DeadlineFrequency> countAssignmentsByDeadline(List<Assignment> assignments) {
+        final var now = instantSupplier.get();
         return assignments.stream()
             .filter(it -> !it.getCompleted() && it.getDeadlineTime() != null)
             .collect(Collectors.groupingBy(Assignment::getDeadlineTime, Collectors.counting()))
             .entrySet().stream()
             .map(it -> DashboardResponse.DeadlineFrequency.builder()
                 .deadlineTime(it.getKey())
-                .overdue(it.getKey().isBefore(instantSupplier.get()))
+                .overdue(it.getKey().isBefore(now))
                 .count(it.getValue())
                 .build())
             .toList();
