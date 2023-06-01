@@ -1,8 +1,7 @@
 package lv.tsi.uap.server.component.step.service;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lv.tsi.uap.server.component.assignment.service.Assignment;
 
 import java.util.UUID;
@@ -10,6 +9,9 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(indexes = @Index(columnList = "assignment_id, index", unique = true))
 public class Step {
 
