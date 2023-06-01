@@ -17,7 +17,7 @@ class AssignmentConverterTest {
 
     @Test
     @DisplayName("Should convert response to entity when course is present")
-    public void shouldConvertRequestToEntityWhenCourseIsPresent() {
+    public void scenario_0865d894655545ed9b2614fcf0d9048d() {
         final var actual = victim.toEntity(AssignmentRequest.builder()
             .title("Computer Practice #3")
             .description("Should be completed in R.")
@@ -37,7 +37,7 @@ class AssignmentConverterTest {
 
     @Test
     @DisplayName("Should convert response to entity when course is not present")
-    public void shouldConvertRequestToEntityWhenCourseIsNotPresent() {
+    public void scenario_d5b7f97e929647a7bc17c5142865d7f6() {
         final var actual = victim.toEntity(AssignmentRequest.builder()
             .title("Computer Practice #3")
             .description("Should be completed in R.")
@@ -56,7 +56,7 @@ class AssignmentConverterTest {
 
     @Test
     @DisplayName("Should convert entity to response when course is present")
-    public void shouldConvertEntityToResponseWhenCourseIsPresent() {
+    public void scenario_3d1dd01c8497448f8259c1b0ed5f78f5() {
         final var actual = victim.toResponse(Assignment.builder()
             .id(UUID.fromString("04bbcd9b-ed67-403b-8c9e-5fe1cef06896"))
             .title("Computer Practice #3")
@@ -86,7 +86,7 @@ class AssignmentConverterTest {
 
     @Test
     @DisplayName("Should convert entity to response when course is not present")
-    public void shouldConvertEntityToResponseWhenCourseIsNotPresent() {
+    public void scenario_cf86a20309514f9fa4e9219f01fe2d4f() {
         final var actual = victim.toResponse(Assignment.builder()
             .id(UUID.fromString("04bbcd9b-ed67-403b-8c9e-5fe1cef06896"))
             .title("Computer Practice #3")

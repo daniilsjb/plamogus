@@ -1,11 +1,13 @@
 package lv.tsi.uap.server.component.assignment.endpoint;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lv.tsi.uap.server.component.assignment.service.AssignmentType;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssignmentQuery {

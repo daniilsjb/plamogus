@@ -14,7 +14,7 @@ class StepConverterTest {
 
     @Test
     @DisplayName("Should convert response to entity")
-    public void shouldConvertRequestToEntity() {
+    public void scenario_21b65d80c5f84ffa96acf50a1d268acf() {
         final var actual = victim.toEntity(StepRequest.builder()
             .title("Prepare the report")
             .build());
@@ -27,7 +27,7 @@ class StepConverterTest {
 
     @Test
     @DisplayName("Should convert entity to response")
-    public void shouldConvertEntityToResponse() {
+    public void scenario_3c09bfe44da347418f1184281508cf97() {
         final var actual = victim.toResponse(Step.builder()
             .id(UUID.fromString("04bbcd9b-ed67-403b-8c9e-5fe1cef06896"))
             .title("Prepare the report")

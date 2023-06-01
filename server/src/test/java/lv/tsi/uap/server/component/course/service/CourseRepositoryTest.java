@@ -21,7 +21,7 @@ class CourseRepositoryTest {
 
     @Test
     @DisplayName("Should find course by code when it exists")
-    public void shouldFindCourseByCode() {
+    public void scenario_d4a77a4d10ab44b6bcfa78b41de1fb1c() {
         entityManager.persist(Course.builder()
             .id(UUID.fromString("4c0d825f-18ef-4864-9a4e-dba9132bfe04"))
             .code("PTMS")
@@ -37,7 +37,7 @@ class CourseRepositoryTest {
 
     @Test
     @DisplayName("Should not find course by code when it does not exist")
-    public void shouldNotFindCourseByCode() {
+    public void scenario_21210676e45d4549931f5dbc6ecc3467() {
         entityManager.persist(Course.builder()
             .id(UUID.fromString("4c0d825f-18ef-4864-9a4e-dba9132bfe04"))
             .code("PTMS")

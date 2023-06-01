@@ -40,13 +40,13 @@ class CourseResponseTest {
 
     @Test
     @DisplayName("Should deserialize")
-    void shouldDeserialize() throws Exception {
+    void scenario_0bf6a901b0304d6791834aca0fedacb4() throws Exception {
         assertThat(tester.parseObject(json())).isEqualTo(request());
     }
 
     @Test
     @DisplayName("Should serialize")
-    void shouldSerialize() throws Exception {
+    void scenario_92463e095fd9465287baf9379e0838a4() throws Exception {
         assertThat(tester.write(request())).isEqualToJson(json());
     }
 

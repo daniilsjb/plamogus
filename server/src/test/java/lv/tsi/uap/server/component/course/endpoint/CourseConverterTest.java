@@ -14,7 +14,7 @@ class CourseConverterTest {
 
     @Test
     @DisplayName("Should convert response to entity")
-    public void shouldConvertRequestToEntity() {
+    public void scenario_ddf4b4aa1a1640a8aaac86c60f65876d() {
         final var actual = victim.toEntity(CourseRequest.builder()
             .code("PTMS")
             .title("Probability Theory and Mathematical Statistics")
@@ -31,7 +31,7 @@ class CourseConverterTest {
 
     @Test
     @DisplayName("Should convert entity to response")
-    public void shouldConvertEntityToResponse() {
+    public void scenario_e705b791a17645e6aeaf21d93ea560c2() {
         final var actual = victim.toResponse(Course.builder()
             .id(UUID.fromString("04bbcd9b-ed67-403b-8c9e-5fe1cef06896"))
             .code("PTMS")

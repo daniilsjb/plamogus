@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -55,12 +54,13 @@ class DefaultAssignmentService extends AbstractCrudService<Assignment, UUID, Ass
         if (entity.getCourse() != null) {
             final var courseId = entity.getCourse().getId();
             if (!courseRepository.existsById(courseId)) {
-                throw new NoSuchElementException("Course '%s' does not exist".formatted(courseId));
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             }
         }
 
         entity.setId(uuidSupplier.get());
         entity.setCreationTime(instantSupplier.get());
+        entity.setCompleted(false);
         return repository.save(entity);
     }
 

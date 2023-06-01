@@ -23,7 +23,7 @@ class StepRepositoryTest {
 
     @Test
     @DisplayName("Should find index of the last step of an assignment")
-    public void shouldFindLastStepIndex() {
+    public void scenario_16ee15edefa647a596ef59d5419be7b0() {
         final var assignmentA = Assignment.builder()
             .id(UUID.fromString("6890e06c-2437-4c41-9f1e-156968952d59"))
             .title("Programming Lab #1")
@@ -89,7 +89,7 @@ class StepRepositoryTest {
 
     @Test
     @DisplayName("Should not find the last index of a step when assignment has no steps")
-    public void shouldReturnNothingWhenAssignmentHasNoSteps() {
+    public void scenario_2385f0a16c7549b298488ca06d554fec() {
         final var assignment = Assignment.builder()
             .id(UUID.fromString("6890e06c-2437-4c41-9f1e-156968952d59"))
             .title("Programming Lab #1")
@@ -105,14 +105,14 @@ class StepRepositoryTest {
 
     @Test
     @DisplayName("Should not find the last index of a step when assignment does not exist")
-    public void shouldReturnNothingWhenAssignmentDoesNotExist() {
+    public void scenario_bc5bb64c2b6241c9afaad1073266a153() {
         final var actual = victim.findLastIndex(UUID.fromString("09cff166-487a-4f97-b49a-fe06a16bcd34"));
         assertThat(actual.isPresent()).isFalse();
     }
 
     @Test
     @DisplayName("Should find all steps belonging to an assignment")
-    public void shouldFindStepsBelongingToAssignment() {
+    public void scenario_ad135a376e2e458cbb091e6bf1483380() {
         final var assignmentA = Assignment.builder()
             .id(UUID.fromString("6890e06c-2437-4c41-9f1e-156968952d59"))
             .title("Programming Lab #1")
@@ -178,7 +178,7 @@ class StepRepositoryTest {
 
     @Test
     @DisplayName("Should return empty list when searching for steps of a non-existent assignment")
-    public void shouldReturnEmptyListWhenSearchingForStepsOfNonExistentAssignment() {
+    public void scenario_43306ba737e448a2b2c8774d14327dc9() {
         final var actual = victim.findByAssignmentIdOrderByIndex(
             UUID.fromString("053d9c16-39db-4c91-83bf-c0ab338dd51c")
         );

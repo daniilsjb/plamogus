@@ -36,13 +36,13 @@ class StepResponseTest {
 
     @Test
     @DisplayName("Should deserialize")
-    void shouldDeserialize() throws Exception {
+    void scenario_ae20bf5087974f248cf6d8881248b7a7() throws Exception {
         assertThat(tester.parseObject(json())).isEqualTo(request());
     }
 
     @Test
     @DisplayName("Should serialize")
-    void shouldSerialize() throws Exception {
+    void scenario_c3a3af11029d41efba81f31dced62a55() throws Exception {
         assertThat(tester.write(request())).isEqualToJson(json());
     }
 

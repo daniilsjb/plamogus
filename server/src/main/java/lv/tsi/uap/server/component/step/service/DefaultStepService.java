@@ -38,6 +38,7 @@ class DefaultStepService extends AbstractCrudService<Step, UUID, StepRepository>
 
         entity.setId(uuidSupplier.get());
         entity.setIndex(nextIndex);
+        entity.setCompleted(false);
         return repository.save(entity);
     }
 
