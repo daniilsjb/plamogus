@@ -39,7 +39,7 @@ class DefaultAssignmentServiceTest {
     @BeforeEach
     public void setUp() {
         // We have to inject mocks manually due to type erasure, otherwise both suppliers would end up being the same.
-        victim = new DefaultAssignmentService(repository, courseRepository, uuidSupplier, instantSupplier);
+        this.victim = new DefaultAssignmentService(repository, courseRepository, uuidSupplier, instantSupplier);
     }
 
     @Test
