@@ -19,7 +19,7 @@ import FormikTextField from "../../components/forms/FormikTextField";
 import FormikLiveTextField from "../../components/forms/FormikLiveTextField";
 
 import { useCourseDeletion, useCourseUpdate } from "../../mutations/course";
-import { removeNewlines, removeNonDigits, removeWhitespace } from "../../common/string";
+import { removeNewlines, removeNonDigits } from "../../common/string";
 import courseSchema from "../../schemas/course";
 
 const DeletionDialog = ({ open, setOpen, course, closeDetails }) => {
@@ -69,9 +69,12 @@ const CourseUpdate = ({ close, course }) => {
 
   const handleSubmit = async (values, formik) => {
     try {
-      await update.mutateAsync({ id: course.id, ...values });
+      const request = courseSchema.cast(values);
+      await update.mutateAsync({ id: course.id, ...request });
     } catch (error) {
-      formik.setFieldError("code", "A course with this code already exists.");
+      if (error.response?.status === 409) {
+        formik.setFieldError("code", "A course with this code already exists.");
+      }
     }
   };
 
@@ -87,7 +90,6 @@ const CourseUpdate = ({ close, course }) => {
                 name="code"
                 label="Code"
                 type="text"
-                onChange={e => formik.setFieldValue("code", removeWhitespace(e.target.value))}
               />
 
               <FormikLiveTextField

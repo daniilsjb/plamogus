@@ -53,6 +53,7 @@ class DefaultCourseService extends AbstractCrudService<Course, UUID, CourseRepos
     @Override
     public Course update(@NonNull Course entity) {
         if (entity.getCode() != null) {
+            // We need to ensure that there is no other course with this code already.
             repository.findByCode(entity.getCode()).ifPresent(it -> {
                 if (!it.getId().equals(entity.getId())) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Course with code '%s' already exists."

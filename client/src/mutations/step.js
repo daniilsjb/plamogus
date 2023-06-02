@@ -14,7 +14,7 @@ export const useStepCompletion = (assignmentId) => {
 export const useStepCreation = (assignmentId) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createStep,
+    mutationFn: ({ id, request }) => createStep(id, request),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["steps", assignmentId] });
     },

@@ -6,6 +6,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { styled } from "@mui/material/styles";
 import { ThemeProvider, useMediaQuery } from "@mui/material";
 
+import dayjs from "dayjs";
+import "dayjs/locale/en-gb";
+
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -35,7 +38,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb" dateLibInstance={dayjs.utc}>
             <CssBaseline/>
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
             <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -34,11 +34,12 @@ import { DatePicker as MuiDatePicker } from "@mui/x-date-pickers/DatePicker/Date
 
 import { findAllCourses } from "../../api/course";
 import { removeNewlines } from "../../common/string";
-import { createStep, findAllSteps } from "../../api/step";
+import { findAllSteps } from "../../api/step";
 import { useAssignmentCompletion, useAssignmentDeletion, useAssignmentUpdate } from "../../mutations/assignment";
-import { useStepCompletion, useStepDeletion, useStepUpdate } from "../../mutations/step";
+import { useStepCompletion, useStepCreation, useStepDeletion, useStepUpdate } from "../../mutations/step";
 import { ASSIGNMENT_TYPES } from "../../common/constants";
 import assignmentSchema from "../../schemas/assignment";
+import stepSchema from "../../schemas/step";
 
 const AssignmentUpdate = ({ close, assignment }) => {
   const update = useAssignmentUpdate();
@@ -59,14 +60,8 @@ const AssignmentUpdate = ({ close, assignment }) => {
   };
 
   const handleSubmit = async (values) => {
-    const transformed = {
-      ...values,
-      type: values.type !== "" ? values.type : null,
-      courseId: values.courseId !== "" ? values.courseId : null,
-      deadlineTime: values.deadlineTime?.toISOString(),
-    };
-
-    await update.mutateAsync({ id: assignment.id, ...transformed });
+    const request = assignmentSchema.cast(values);
+    await update.mutateAsync({ id: assignment.id, ...request });
   };
 
   if (status === "loading") {
@@ -219,16 +214,13 @@ const AssignmentStep = ({ assignment, step, idx }) => {
 
   const [value, setValue] = useState(step.title);
   const onSubmit = async () => {
-    if (!value) {
-      await stepDeletion.mutateAsync(step.id);
-    } else {
-      await stepUpdate.mutateAsync({ id: step.id, request: { title: value } });
-    }
+    stepSchema.validate({ title: value })
+      .then(request => stepUpdate.mutate({ id: step.id, request }))
+      .catch(() => stepDeletion.mutate(step.id));
   };
 
   const handleKeyDown = async (event) => {
-    if (value && event.key === "Enter") {
-      console.log(`Saving step ${value}`);
+    if (event.key === "Enter") {
       await onSubmit();
     }
   };
@@ -250,20 +242,22 @@ const AssignmentStep = ({ assignment, step, idx }) => {
         inputProps={{ maxLength: 64 }}
         startAdornment={
           <InputAdornment position="start">
-            <IconButton edge="start" sx={{ color: "primary.main" }} onClick={handleComplete}>
-              {step.completed ? (
-                <CheckCircleIcon/>
-              ) : (
-                <RadioButtonUncheckedOutlinedIcon/>
-              )}
-            </IconButton>
+              <IconButton edge="start" sx={{ color: "primary.main" }} onClick={handleComplete}>
+                {step.completed ? (
+                  <CheckCircleIcon/>
+                ) : (
+                  <RadioButtonUncheckedOutlinedIcon/>
+                )}
+              </IconButton>
           </InputAdornment>
         }
         endAdornment={
           <InputAdornment position="end">
-            <IconButton edge="end" onClick={handleDelete}>
-              <DeleteOutlineOutlinedIcon/>
-            </IconButton>
+            <Tooltip title="Delete Step">
+              <IconButton edge="end" onClick={handleDelete}>
+                <DeleteOutlineOutlinedIcon/>
+              </IconButton>
+            </Tooltip>
           </InputAdornment>
         }
       />
@@ -296,18 +290,21 @@ const DeletionDialog = ({ open, setOpen, assignment, closeDetails }) => {
 };
 
 const StepForm = ({ assignment }) => {
-  const queryClient = useQueryClient();
-  const { mutateAsync } = useMutation({
-    mutationFn: async ({ id, request }) => createStep(id, request),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["steps", assignment.id] });
-    },
-  });
+  const stepCreation = useStepCreation(assignment.id);
 
   const [value, setValue] = useState("");
-  const onSubmit = async () => {
-    await mutateAsync({ id: assignment.id, request: { title: value } });
+  const handleSubmit = async () => {
+    stepSchema.validate({ title: value })
+      .then(request => stepCreation.mutate({ id: assignment.id, request }))
+      .catch(() => {/* Ignore. */});
+
     setValue("");
+  };
+
+  const handleKeyDown = async (event) => {
+    if (event.key === "Enter") {
+      await handleSubmit();
+    }
   };
 
   return (
@@ -317,7 +314,8 @@ const StepForm = ({ assignment }) => {
         label="Step"
         type="text"
         value={value}
-        onBlur={onSubmit}
+        onBlur={handleSubmit}
+        onKeyDown={handleKeyDown}
         onChange={(event) => setValue(removeNewlines(event.target.value))}
         inputProps={{ maxLength: 64 }}
         placeholder="Add step"

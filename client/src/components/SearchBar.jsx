@@ -8,7 +8,7 @@ const SearchBar = ({ setSearch }) => {
   const [value, setValue] = useState(null);
 
   const handleSearch = () => {
-    setSearch(value);
+    setSearch(value?.trim()?.replace(/\s+/g, ' '));
   };
 
   const handleChange = (event) => {

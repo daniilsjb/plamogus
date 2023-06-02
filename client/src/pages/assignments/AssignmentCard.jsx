@@ -97,8 +97,8 @@ const CourseChip = ({ assignment: { course, completed } }) => {
 };
 
 const DeadlineChip = ({ assignment: { deadlineTime, completed } }) => {
-  const today = dayjs().startOf("date");
-  const overdue = deadlineTime && dayjs(deadlineTime).isBefore(today);
+  const now = dayjs();
+  const overdue = deadlineTime && dayjs(deadlineTime).isBefore(now);
 
   const calendarIcon = (overdue && !completed)
     ? <EventBusyIcon sx={{ "&&": { color: "error.main" } }}/>

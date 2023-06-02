@@ -29,6 +29,103 @@ import dayjs from "dayjs";
 import { useQuery } from "react-query";
 import { getDashboard } from "../../api/dashboard";
 import { ASSIGNMENT_TYPES } from "../../common/constants";
+import { Navigate } from "react-router-dom";
+
+const Dashboard = () => {
+  const { status, data } = useQuery({
+    queryKey: ["dashboard", "assignments", "courses"],
+    queryFn: getDashboard,
+  });
+
+  if (status === "loading") {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CircularProgress/>
+      </Box>
+    );
+  } else if (status === "error") {
+    return <Navigate to="/error"/>
+  }
+
+  return (
+    <Grid container spacing={3}>
+      {/* ROW 1 */}
+      <Grid item container xs={12} sm={12} md={12} lg={4} spacing={3}>
+        <Grid item xs={12} sm={6} lg={12}>
+          <Paper sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            p: 1,
+            gap: { xs: 1, sm: 2, md: 3 },
+          }}>
+            <PendingAssignments pending={data.pendingCount}/>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} lg={12}>
+          <Paper sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            p: 1,
+            gap: { xs: 1, sm: 2, md: 3 },
+          }}>
+            <OverdueAssignments overdue={data.overdueCount}/>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={12} lg={8}>
+        <Paper sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 3,
+          gap: { xs: 1, sm: 2, md: 3 },
+        }}>
+          <Typography variant="h5">Semester Insights</Typography>
+          <SemesterDistribution data={data.semesters}/>
+        </Paper>
+      </Grid>
+
+      {/* ROW 2 */}
+      <Grid item xs={12} sm={12} lg={5}>
+        <Paper sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 3,
+          gap: { xs: 1, sm: 2, md: 3 },
+        }}>
+          <Typography variant="h5">Deadline Overview</Typography>
+          <AssignmentCalendar data={data.deadlines}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={12} sm={12} lg={7}>
+        <Paper sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 3,
+          gap: { xs: 1, sm: 2, md: 3 },
+        }}>
+          <Typography variant="h5">Assignment Distribution</Typography>
+          <TypeDistribution data={data.types}/>
+        </Paper>
+      </Grid>
+    </Grid>
+  );
+};
 
 const PendingAssignments = ({ pending }) => {
   return (
@@ -143,104 +240,6 @@ const AssignmentCalendar = ({ data }) => {
         day: { data },
       }}
     />
-  );
-};
-
-const Dashboard = () => {
-  const { status, data } = useQuery({
-    queryKey: ["dashboard", "assignments", "courses"],
-    queryFn: getDashboard,
-  });
-
-  if (status === "loading") {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <CircularProgress/>
-      </Box>
-    );
-  }
-
-  if (status === "error") {
-    return <Typography>Oops! Something went wrong.</Typography>;
-  }
-
-  return (
-    <Grid container spacing={3}>
-      {/* ROW 1 */}
-      <Grid item container xs={12} sm={12} md={12} lg={4} spacing={3}>
-        <Grid item xs={12} sm={6} lg={12}>
-          <Paper sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-            p: 1,
-            gap: { xs: 1, sm: 2, md: 3 },
-          }}>
-            <PendingAssignments pending={data.pendingCount}/>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} lg={12}>
-          <Paper sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-            p: 1,
-            gap: { xs: 1, sm: 2, md: 3 },
-          }}>
-            <OverdueAssignments overdue={data.overdueCount}/>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      <Grid item xs={12} sm={12} md={12} lg={8}>
-        <Paper sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 3,
-          gap: { xs: 1, sm: 2, md: 3 },
-        }}>
-          <Typography variant="h5">Semester Insights</Typography>
-          <SemesterDistribution data={data.semesters}/>
-        </Paper>
-      </Grid>
-
-      {/* ROW 2 */}
-      <Grid item xs={12} sm={12} lg={5}>
-        <Paper sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 3,
-          gap: { xs: 1, sm: 2, md: 3 },
-        }}>
-          <Typography variant="h5">Deadline Overview</Typography>
-          <AssignmentCalendar data={data.deadlines}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} sm={12} lg={7}>
-        <Paper sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 3,
-          gap: { xs: 1, sm: 2, md: 3 },
-        }}>
-          <Typography variant="h5">Assignment Distribution</Typography>
-          <TypeDistribution data={data.types}/>
-        </Paper>
-      </Grid>
-    </Grid>
   );
 };
 

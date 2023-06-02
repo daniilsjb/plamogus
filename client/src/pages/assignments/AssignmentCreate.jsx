@@ -35,13 +35,7 @@ const AssignmentCreate = ({ close }) => {
   };
 
   const handleSubmit = async (values, formik) => {
-    const request = {
-      ...values,
-      type: values.type || null,
-      courseId: values.courseId || null,
-      deadlineTime: values.deadlineTime?.toISOString(),
-    };
-
+    const request = assignmentSchema.cast(values);
     await create.mutateAsync(request);
     formik.resetForm();
   };

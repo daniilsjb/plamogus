@@ -6,7 +6,7 @@ import { Field, Form, Formik } from "formik";
 import FormikTextField from "../../components/forms/FormikTextField";
 
 import { useCourseCreation } from "../../mutations/course";
-import { removeNewlines, removeNonDigits, removeWhitespace } from "../../common/string";
+import { removeNewlines, removeNonDigits } from "../../common/string";
 import courseSchema from "../../schemas/course";
 
 const CourseCreate = ({ close }) => {
@@ -16,8 +16,9 @@ const CourseCreate = ({ close }) => {
   };
 
   const handleSubmit = async (values, formik) => {
+    const request = courseSchema.cast(values);
     try {
-      await creation.mutateAsync(values);
+      await creation.mutateAsync(request);
       formik.resetForm();
     } catch (error) {
       if (error.response?.status === 409) {
@@ -40,7 +41,6 @@ const CourseCreate = ({ close }) => {
                 type="text"
                 placeholder="e.g., CS101"
                 required
-                onChange={e => formik.setFieldValue("code", removeWhitespace(e.target.value))}
               />
 
               <Field
@@ -61,6 +61,7 @@ const CourseCreate = ({ close }) => {
                 name="semester"
                 label="Semester"
                 type="text"
+                placeholder="e.g., 1"
                 onChange={e => formik.setFieldValue("semester", removeNonDigits(e.target.value))}
               />
 
