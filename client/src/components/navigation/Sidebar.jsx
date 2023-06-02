@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useMediaQuery, useTheme } from "@mui/material";
 
