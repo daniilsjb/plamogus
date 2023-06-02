@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import Box from "@mui/material/Box";
@@ -24,6 +24,12 @@ const queryClient = new QueryClient();
 const App = () => {
   const [theme, colorMode] = useColorMode();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isTemporary = useMediaQuery(theme.breakpoints.down("md"));
+
+  // Automatically collapse sidebar when it becomes temporary.
+  useEffect(() => {
+    if (isTemporary) setSidebarOpen(false);
+  }, [isTemporary, setSidebarOpen]);
 
   return (
     <QueryClientProvider client={queryClient}>

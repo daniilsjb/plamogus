@@ -11,6 +11,7 @@ const NotFound = () => {
       justifyContent: "center",
       alignItems: "center",
       height: "100%",
+      flex: 1,
     }}>
       <Icon component={SearchOffIcon} sx={{ fontSize: "160px", color: "primary.main" }}></Icon>
       <Typography variant="h4" sx={{ mt: 3 }}>404</Typography>

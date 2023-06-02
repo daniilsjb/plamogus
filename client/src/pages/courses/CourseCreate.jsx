@@ -31,7 +31,7 @@ const CourseCreate = ({ close }) => {
       {(formik) => (
         <Form style={{ height: "100%" }}>
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flexGrow: 1, overflow: "scroll" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flexGrow: 1, overflow: "auto" }}>
               <Field
                 variant="filled"
                 component={FormikTextField}

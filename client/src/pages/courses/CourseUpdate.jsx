@@ -80,7 +80,7 @@ const CourseUpdate = ({ close, course }) => {
       {(formik) => (
         <Form style={{ height: "100%" }}>
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, overflow: "scroll", flexGrow: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, overflow: "auto", flexGrow: 1 }}>
               <FormikLiveTextField
                 variant="filled"
                 component={FormikTextField}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useMediaQuery, useTheme } from "@mui/material";
 
@@ -18,11 +18,6 @@ const Sidebar = ({ open, setOpen }) => {
   const { breakpoints, width } = useTheme();
   const isTemporary = useMediaQuery(breakpoints.down("md"));
 
-  // Automatically collapse sidebar when it becomes temporary.
-  useEffect(() => {
-    if (isTemporary) setOpen(false);
-  }, [isTemporary, setOpen]);
-
   const handleNavigationClick = () => {
     if (isTemporary) setOpen(false)();
   };
@@ -41,7 +36,7 @@ const Sidebar = ({ open, setOpen }) => {
       }}
     >
       <Toolbar/>
-      <Box sx={{ overflow: "scroll" }}>
+      <Box sx={{ overflow: "auto" }}>
         <List>
           <NavigationEntry
             icon={<SpaceDashboardOutlinedIcon/>}
