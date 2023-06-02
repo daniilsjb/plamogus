@@ -58,9 +58,11 @@ than the one where Docker Compose is running). Make sure you are in the `server`
 ```sh
 # If you are on Windows.
 .\mvnw.cmd clean install
+.\mvnw.cmd spring-boot:run
 
 # If you are on Mac or Linux.
 ./mvnw clean install
+./mvnw spring-boot:run
 ```
 
 At this point, the backend should be up and listening on port `8080`. You may verify this by running a `GET` request
