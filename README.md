@@ -67,7 +67,7 @@ than the one where Docker Compose is running). Make sure you are in the `server`
 ```
 
 At this point, the backend should be up and listening on port `8080`. You may verify this by running a `GET` request
-to any of the available endpoints, such as <localhost:8080/api/v1/assignments>. At this point, it should return
+to any of the available endpoints, such as `localhost:8080/api/v1/assignments`. At this point, it should return
 an empty response.
 
 Finally, you need to start the React application using `npm`. Make sure you are in the `client` directory and execute
@@ -78,4 +78,4 @@ npm install
 npm start
 ```
 
-At this point, the website should be running on port `3000`. Navigate to <localhost:3000/assignments> to try it out!
+At this point, the website should be running on port `3000`. Navigate to `localhost:3000/assignments` to try it out!
