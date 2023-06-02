@@ -38,11 +38,7 @@ const Dashboard = () => {
   });
 
   if (status === "loading") {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <CircularProgress/>
-      </Box>
-    );
+    return <DashboardLoading/>;
   } else if (status === "error") {
     return <Navigate to="/error"/>
   }
@@ -124,6 +120,16 @@ const Dashboard = () => {
         </Paper>
       </Grid>
     </Grid>
+  );
+};
+
+const DashboardLoading = () => {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+      <CircularProgress/>
+      <Typography sx={{ mt: 3 }} variant="h6">Hold up a moment!</Typography>
+      <Typography sx={{ mt: 1 }}>We are just loading your data...</Typography>
+    </Box>
   );
 };
 
