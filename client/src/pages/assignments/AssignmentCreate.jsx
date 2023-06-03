@@ -1,4 +1,5 @@
 import { useQuery } from "react-query";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -18,6 +19,9 @@ import { ASSIGNMENT_TYPES } from "../../common/constants";
 import assignmentSchema from "../../schemas/assignment";
 
 const AssignmentCreate = ({ close }) => {
+  const theme = useTheme();
+  const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
+
   const { data } = useQuery({
     queryKey: ["courses"],
     queryFn: () => findAllCourses({}),
@@ -38,6 +42,9 @@ const AssignmentCreate = ({ close }) => {
     const request = assignmentSchema.cast(values);
     await create.mutateAsync(request);
     formik.resetForm();
+    if (isSidebarTemporary) {
+      close();
+    }
   };
 
   return (
@@ -51,6 +58,7 @@ const AssignmentCreate = ({ close }) => {
               name="title"
               label="Title"
               type="text"
+              autoComplete="off"
               required
             />
 

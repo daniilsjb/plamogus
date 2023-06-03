@@ -21,7 +21,7 @@ import { useAssignmentCompletion } from "../../mutations/assignment";
 
 const AssignmentCard = ({ assignment, selected, onClick }) => {
   return (
-    <Card sx={{ overflow: "visible", mx: 2 }} raised={selected}>
+    <Card sx={{ overflow: "visible", mx: 2, mb: 2 }} raised={selected}>
       <CardActionArea component="a" onClick={onClick}>
         <CardContent sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <AssignmentCompletion assignment={assignment}/>

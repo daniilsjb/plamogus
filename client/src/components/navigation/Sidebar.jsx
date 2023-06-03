@@ -18,7 +18,7 @@ const Sidebar = ({ open, setOpen }) => {
   const isTemporary = useMediaQuery(breakpoints.down("md"));
 
   const handleNavigationClick = () => {
-    if (isTemporary) setOpen(false)();
+    if (isTemporary) setOpen(false);
   };
 
   return (

@@ -79,13 +79,14 @@ const AssignmentUpdate = ({ close, assignment }) => {
     >
       <Form style={{ height: "100%" }}>
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, overflow: "auto", flexGrow: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flexGrow: 1 }}>
             <FormikLiveTextField
               variant="filled"
               component={FormikTextField}
               name="title"
               label="Title"
               type="text"
+              autoComplete="off"
               InputProps={{
                 startAdornment:
                   <InputAdornment position="start">

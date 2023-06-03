@@ -105,7 +105,7 @@ const FilteredAssignmentsEmpty = () => {
 const AssignmentContent = ({ data, selectedAssignment, selectAssignment }) => {
   const [completed, pending] = partition(data, it => it.completed);
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", flex: 1, gap: 2, overflow: "auto" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "auto" }}>
       {(pending.length !== 0) && <AssignmentGroup
         title="Pending"
         assignments={pending}
@@ -125,7 +125,7 @@ const AssignmentContent = ({ data, selectedAssignment, selectAssignment }) => {
 
 const AssignmentGroup = ({ title, assignments, selectedAssignment, selectAssignment }) => {
   return <>
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
       <Typography>{title}</Typography>
       <Typography variant="body2" sx={{ ml: 1, color: "text.secondary" }}>
         {assignments.length}

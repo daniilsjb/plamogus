@@ -5,13 +5,13 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { styled } from "@mui/material/styles";
 import { ThemeProvider, useMediaQuery } from "@mui/material";
-
-import dayjs from "dayjs";
-import "dayjs/locale/en-gb";
+import { ColorModeContext, useColorMode } from "./theme";
 
 import { QueryClient, QueryClientProvider } from "react-query";
+
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import "dayjs/locale/en-gb";
 
 import Assignments from "./pages/assignments/Index";
 import Courses from "./pages/courses/Index";
@@ -20,7 +20,6 @@ import NotFound from "./pages/not-found/Index";
 import Error from "./pages/error/Index";
 import Sidebar from "./components/navigation/Sidebar";
 import Header from "./components/navigation/Header";
-import { ColorModeContext, useColorMode } from "./theme";
 
 const queryClient = new QueryClient();
 
@@ -32,13 +31,13 @@ const App = () => {
   // Automatically collapse sidebar when it becomes temporary.
   useEffect(() => {
     if (isTemporary) setSidebarOpen(false);
-  }, [isTemporary, setSidebarOpen]);
+  }, [isTemporary]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb" dateLibInstance={dayjs.utc}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
             <CssBaseline/>
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}/>
             <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

@@ -1,3 +1,5 @@
+import { useMediaQuery, useTheme } from "@mui/material";
+
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
@@ -10,6 +12,9 @@ import { removeNewlines, removeNonDigits } from "../../common/string";
 import courseSchema from "../../schemas/course";
 
 const CourseCreate = ({ close }) => {
+  const theme = useTheme();
+  const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
+
   const creation = useCourseCreation();
   const initialValues = {
     code: "", title: "", semester: "", description: "",
@@ -20,6 +25,9 @@ const CourseCreate = ({ close }) => {
     try {
       await creation.mutateAsync(request);
       formik.resetForm();
+      if (isSidebarTemporary) {
+        close();
+      }
     } catch (error) {
       if (error.response?.status === 409) {
         formik.setFieldError("code", "A course with this code already exists.");
@@ -40,6 +48,7 @@ const CourseCreate = ({ close }) => {
                 label="Code"
                 type="text"
                 placeholder="e.g., CS101"
+                autoComplete="off"
                 required
               />
 
