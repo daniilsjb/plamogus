@@ -9,8 +9,8 @@ import java.util.UUID;
 @Builder
 class StepResponse {
 
-    UUID id;
-    String title;
-    Boolean completed;
+    private final UUID id;
+    private final String title;
+    private final Boolean completed;
 
 }

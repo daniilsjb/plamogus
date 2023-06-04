@@ -11,21 +11,21 @@ import java.util.UUID;
 @Builder
 class AssignmentResponse {
 
-    UUID id;
-    String title;
-    String description;
-    Boolean completed;
-    Instant creationTime;
-    Instant deadlineTime;
-    AssignmentType type;
-    Course course;
+    private final UUID id;
+    private final String title;
+    private final String description;
+    private final Boolean completed;
+    private final Instant creationTime;
+    private final Instant deadlineTime;
+    private final AssignmentType type;
+    private final Course course;
 
     @Value
     @Builder
     public static class Course {
 
-        UUID id;
-        String code;
+        private final UUID id;
+        private final String code;
 
     }
 

@@ -11,18 +11,18 @@ import java.util.List;
 @Builder
 public class DashboardResponse {
 
-    Long pendingCount;
-    Long overdueCount;
-    List<TypeFrequency> types;
-    List<SemesterFrequency> semesters;
-    List<DeadlineFrequency> deadlines;
+    private final Long pendingCount;
+    private final Long overdueCount;
+    private final List<TypeFrequency> types;
+    private final List<SemesterFrequency> semesters;
+    private final List<DeadlineFrequency> deadlines;
 
     @Value
     @Builder
     public static class TypeFrequency {
 
-        AssignmentType type;
-        Long count;
+        private final AssignmentType type;
+        private final Long count;
 
     }
 
@@ -30,8 +30,8 @@ public class DashboardResponse {
     @Builder
     public static class SemesterFrequency {
 
-        Integer semester;
-        Long count;
+        private final Integer semester;
+        private final Long count;
 
     }
 
@@ -39,9 +39,9 @@ public class DashboardResponse {
     @Builder
     public static class DeadlineFrequency {
 
-        Instant deadlineTime;
-        Boolean overdue;
-        Long count;
+        private final Instant deadlineTime;
+        private final Boolean overdue;
+        private final Long count;
 
     }
 

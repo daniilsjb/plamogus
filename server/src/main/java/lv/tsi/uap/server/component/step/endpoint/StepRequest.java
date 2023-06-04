@@ -13,6 +13,6 @@ class StepRequest {
 
     @NotBlank(message = "Attribute 'title' cannot be blank.")
     @Size(max = 64, message = "Attribute 'title' cannot exceed 64 characters.")
-    String title;
+    private final String title;
 
 }

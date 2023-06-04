@@ -14,16 +14,16 @@ class CourseRequest {
 
     @NotBlank(message = "Attribute 'code' cannot be blank.")
     @Size(max = 8, message = "Attribute 'code' cannot exceed 8 characters.")
-    String code;
+    private final String code;
 
     @NotBlank(message = "Attribute 'title' cannot be blank.")
     @Size(max = 64, message = "Attribute 'title' cannot exceed 64 characters.")
-    String title;
+    private final String title;
 
     @Size(max = 1024, message = "Attribute 'description' cannot exceed 1024 characters.")
-    String description;
+    private final String description;
 
     @Positive(message = "Attribute 'semester' must be positive.")
-    Integer semester;
+    private final Integer semester;
 
 }

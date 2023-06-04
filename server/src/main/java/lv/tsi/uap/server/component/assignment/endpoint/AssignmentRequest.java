@@ -17,15 +17,13 @@ class AssignmentRequest {
 
     @NotBlank(message = "Attribute 'title' cannot be blank.")
     @Size(max = 64, message = "Attribute 'title' cannot exceed 64 characters.")
-    String title;
+    private final String title;
 
     @Size(max = 512, message = "Attribute 'description' cannot exceed 512 characters.")
-    String description;
+    private final String description;
 
-    Instant deadlineTime;
-
-    AssignmentType type;
-
-    UUID courseId;
+    private final Instant deadlineTime;
+    private final AssignmentType type;
+    private final UUID courseId;
 
 }
