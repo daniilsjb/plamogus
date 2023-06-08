@@ -9,31 +9,14 @@ A small and simple university assignment planner for students! 🎓
 
 - Full-stack CRUD application.
 - RESTful API and PostgreSQL database.
-- UI and UX based on Google's [Material Design](https://m3.material.io/)
-- Contains charts and calendars.
-- Supports dark and light themes.
-
-## Technologies
-
-The backend makes use of the following modules:
-
-- [Spring Boot](https://spring.io/projects/spring-boot)
-- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-- Spring Boot Validation
-- Spring Boot Test
-- [Lombok](https://projectlombok.org/)
-
-The frontend makes use of the following modules:
-
-- [React](https://react.dev/)
-- [React Router](https://reactrouter.com/en/main)
-- [React Query](https://tanstack.com/query/v3/)
-- [MUI](https://mui.com/)
-- [Recharts](https://recharts.org/en-US/)
-- [Formik](https://formik.org/)
-- [Yup](https://github.com/jquense/yup)
-- [Axios](https://axios-http.com/docs/intro)
-- [DayJS](https://day.js.org/)
+- [Spring Boot][spring-boot] backend with [JPA][jpa] and [Lombok][lombok].
+- [React][react] frontend for web browsers with [React Router][react-router].
+- UI and UX based on Google's [Material Design][material] ([MUI][mui]).
+- Form management and validation using [Formik][formik] and [Yup][yup].
+- Querying using [React Query][react-query] and [Axios][axios].
+- Dashboard with [Recharts][recharts] components.
+- Calendars and date pickers, with  [day.js][dayjs] time operations.
+- Support for dark and light themes.
 
 ## Building and Running
 
@@ -138,6 +121,24 @@ npm start
 At this point, the entire application stack should be up and running. Open up your web browser and navigate to
 `localhost:3000/` to try it out!
 
+<!-- Backend references. -->
+[jpa]: https://spring.io/projects/spring-data-jpa
+[lombok]: https://projectlombok.org/
+[spring-boot]: https://spring.io/projects/spring-boot
+
+<!-- Frontend references. -->
+[axios]: https://axios-http.com/docs/intro
+[dayjs]: https://day.js.org/
+[formik]: https://formik.org/
+[material]: https://m3.material.io/
+[mui]: https://mui.com/
+[react-query]: https://tanstack.com/query/v3/
+[react-router]: https://reactrouter.com/en/main
+[react]: https://react.dev/
+[recharts]: https://recharts.org/en-US/
+[yup]: https://github.com/jquense/yup
+
+<!-- Build references. -->
 [1]: https://www.docker.com/
 [2]: https://hub.docker.com/_/postgres
 [3]: https://www.docker.com/products/docker-desktop/
