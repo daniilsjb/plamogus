@@ -2,7 +2,7 @@
 
 A small and simple university assignment planner for students! 🎓
 
-![Collection of screenshots from the application.](assets/other.png "Thumbnail")
+![Collection of screenshots from the application.](assets/thumbnail.png "Thumbnail")
 
 ## Features
 
