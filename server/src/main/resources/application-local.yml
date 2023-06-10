@@ -1,7 +1,7 @@
 database:
-  url: 'jdbc:postgresql://localhost:5432/uap'
-  username: 'uap_user'
-  password: 'uap_user'
+  url: 'jdbc:postgresql://localhost:5432/plamogus'
+  username: 'plamogus_user'
+  password: 'plamogus_user'
 
 spring:
   jpa:

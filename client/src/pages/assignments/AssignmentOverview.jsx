@@ -1,10 +1,3 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
-import { Navigate } from "react-router-dom";
-import { styled } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CircularProgress from "@mui/material/CircularProgress";
-
 import Box from "@mui/material/Box";
 import Icon from "@mui/material/Icon";
 import Button from "@mui/material/Button";
@@ -14,74 +7,50 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 import AssignmentCard from "./AssignmentCard";
 import AssignmentActions from "./AssignmentActions";
-
-import { findAllAssignments } from "../../api/assignment";
 import { partition } from "../../common/functional";
+import SidebarShiftedContainer from "../../components/SidebarShiftedContainer";
+import { useTheme } from "@mui/material";
+import { useAssignmentContext } from "./AssignmentContext";
 
-const AssignmentOverview = ({
-  detailsOpen,
-  handleCreate,
-  handleSelect,
-  selectedAssignment,
-}) => {
-  const [queryParams, setQueryParams] = useState({ order: "asc" });
-  const setQueryParam = (name, value) => {
-    setQueryParams({
-      ...queryParams,
-      [name]: value,
-    });
-  };
+const AssignmentOverview = ({ data }) => {
+  const { selectedAction } = useAssignmentContext();
+  return (
+    <Container sidebarOpen={!!selectedAction}>
+      <Content data={data}/>
+    </Container>
+  );
+};
 
-  const { status, data } = useQuery({
-    queryKey: ["assignments", queryParams],
-    queryFn: () => findAllAssignments(queryParams),
-    keepPreviousData: true,
-  });
+const Container = ({ sidebarOpen, children }) => {
+  const { width } = useTheme();
+  return (
+    <SidebarShiftedContainer
+      sx={{ display: "flex", flexDirection: "column", flex: 1, gap: { xs: 2, sm: 3 } }}
+      sidebarSize={width.detailsDrawer}
+      sidebarOpen={sidebarOpen}
+      sidebarAnchor="right"
+    >
+      {children}
+    </SidebarShiftedContainer>
+  );
+};
 
-  if (status === "loading") {
-    return <AssignmentsLoading/>;
-  } else if (status === "error") {
-    return <Navigate to="/error"/>;
+const Content = ({ data }) => {
+  const { queryParams } = useAssignmentContext();
+
+  const filteringApplied = !!(queryParams.type || queryParams.title || queryParams.course);
+  if (data.length === 0 && !filteringApplied) {
+    return <Empty/>;
   }
 
-  const isFilterApplied = !!queryParams.type || !!queryParams.title || !!queryParams.course;
-  return (
-    <ContentContainer detailsOpen={detailsOpen} sx={{ display: "flex", flexDirection: "column", flex: 1, gap: 3 }}>
-      {(data.length === 0 && !isFilterApplied) ? (
-        <AssignmentsEmpty handleCreate={handleCreate}/>
-      ) : (<>
-        <AssignmentActions
-          queryParams={queryParams}
-          setQueryParam={setQueryParam}
-          handleCreate={handleCreate}
-        />
-
-        {(data.length === 0 && isFilterApplied) ? (
-          <FilteredAssignmentsEmpty/>
-        ) : (
-          <AssignmentContent
-            data={data}
-            selectAssignment={handleSelect}
-            selectedAssignment={selectedAssignment}
-          />
-        )}
-      </>)}
-    </ContentContainer>
-
-  );
+  return <>
+    <AssignmentActions/>
+    <Results data={data}/>
+  </>;
 };
 
-const AssignmentsLoading = () => {
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
-      <CircularProgress/>
-      <Typography sx={{ mt: 3 }} variant="h6">Hold up a moment!</Typography>
-      <Typography sx={{ mt: 1 }}>We are just loading your assignments...</Typography>
-    </Box>
-  );
-};
-
-const AssignmentsEmpty = ({ handleCreate }) => {
+const Empty = () => {
+  const { handleCreate } = useAssignmentContext();
   return (
     <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", flex: 1 }}>
       <Icon component={AssignmentIcon} sx={{ fontSize: "160px", color: "primary.main" }}></Icon>
@@ -92,7 +61,15 @@ const AssignmentsEmpty = ({ handleCreate }) => {
   );
 };
 
-const FilteredAssignmentsEmpty = () => {
+const Results = ({ data }) => {
+  if (data.length > 0) {
+    return <Groups data={data}/>;
+  } else {
+    return <EmptyFiltered/>;
+  }
+};
+
+const EmptyFiltered = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", flex: 1 }}>
       <Icon component={SearchOffIcon} sx={{ fontSize: "160px", color: "primary.main" }}></Icon>
@@ -102,67 +79,39 @@ const FilteredAssignmentsEmpty = () => {
   );
 };
 
-const AssignmentContent = ({ data, selectedAssignment, selectAssignment }) => {
+const Groups = ({ data }) => {
   const [completed, pending] = partition(data, it => it.completed);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "auto" }}>
-      {(pending.length !== 0) && <AssignmentGroup
-        title="Pending"
-        assignments={pending}
-        selectedAssignment={selectedAssignment}
-        selectAssignment={selectAssignment}
-      />}
-
-      {(completed.length !== 0) && <AssignmentGroup
-        title="Completed"
-        assignments={completed}
-        selectedAssignment={selectedAssignment}
-        selectAssignment={selectAssignment}
-      />}
+      {(pending.length !== 0) &&
+        <Group title="Pending" data={pending}/>
+      }
+      {(completed.length !== 0) &&
+        <Group title="Completed" data={completed}/>
+      }
     </Box>
   );
 };
 
-const AssignmentGroup = ({ title, assignments, selectedAssignment, selectAssignment }) => {
+const Group = ({ title, data }) => {
+  const { handleSelect, selectedAssignment } = useAssignmentContext();
   return <>
     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
       <Typography>{title}</Typography>
       <Typography variant="body2" sx={{ ml: 1, color: "text.secondary" }}>
-        {assignments.length}
+        {data.length}
       </Typography>
     </Box>
 
-    {assignments.map(it => (
+    {data.map(it => (
       <AssignmentCard
         key={it.id}
         assignment={it}
         selected={selectedAssignment?.id === it.id}
-        onClick={() => selectAssignment(it)}
+        onClick={() => handleSelect(it)}
       />
     ))}
   </>;
 };
-
-const ContentContainer = styled(Box, { shouldForwardProp: (prop) => prop !== "detailsOpen" })(
-  ({ theme, detailsOpen }) => {
-    const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
-    return {
-      marginRight: (isSidebarTemporary || !detailsOpen) ? 0 : `${theme.width.detailsDrawer}px`,
-      ...(!isSidebarTemporary && {
-        ...(detailsOpen ? {
-          transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-        } : {
-          transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-        }),
-      }),
-    };
-  },
-);
 
 export default AssignmentOverview;

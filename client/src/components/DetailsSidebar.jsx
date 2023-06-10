@@ -1,21 +1,20 @@
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import Drawer from "@mui/material/Drawer";
+import { useTheme } from "@mui/material/styles";
+import { useResponsiveQuery } from "../theme";
 
 const DetailsSidebar = ({ children, ...rest }) => {
-  const { breakpoints, width } = useTheme();
-  const isTemporary = useMediaQuery(breakpoints.down("md"));
+  const { width } = useTheme();
+  const { isSidebarTemporary } = useResponsiveQuery();
 
   return (
     <Drawer
       anchor="right"
-      variant={isTemporary ? "temporary" : "persistent"}
+      variant={isSidebarTemporary ? "temporary" : "persistent"}
       PaperProps={{
         elevation: 1,
         sx: {
           width: width.detailsDrawer,
-          boxSizing: "border-box",
-          p: 3,
+          p: { xs: 2, sm: 3 },
         },
       }}
       {...rest}

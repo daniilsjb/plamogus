@@ -27,70 +27,73 @@ import ResponsiveIconButton from "../../components/ResponsiveIconButton";
 
 import { findAllCourses } from "../../api/course";
 import { ASSIGNMENT_TYPES } from "../../common/constants";
+import { useAssignmentContext } from "./AssignmentContext";
 
-const AssignmentActions = ({ queryParams, setQueryParam, handleCreate }) => {
+const AssignmentActions = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Controls
-        queryParams={queryParams}
-        setQueryParam={setQueryParam}
-        handleCreate={handleCreate}
-      />
-
-      <Selections
-        queryParams={queryParams}
-        setQueryParam={setQueryParam}
-      />
+      <Controls/>
+      <Selections/>
     </Box>
   );
 };
 
-const Controls = ({ queryParams, setQueryParam, handleCreate }) => {
+const Controls = () => {
+  const { handleCreate, queryParams, setQueryParams } = useAssignmentContext();
   return (
     <Box sx={{ display: "flex", gap: { xs: 1, sm: 2, md: 3 }, alignItems: "center" }}>
       <NewButton onClick={handleCreate}/>
       <SearchBar
-        setSearch={(value) => setQueryParam("title", value)}
+        setSearch={value => setQueryParams({ ...queryParams, title: value })}
       />
       <FilterByTypeButton
         criterion={queryParams.type}
-        setCriterion={(value) => setQueryParam("type", value)}
+        setCriterion={value => setQueryParams({ ...queryParams, type: value })}
       />
       <FilterByCourseButton
         criterion={queryParams.course}
-        setCriterion={(value) => setQueryParam("course", value)}
+        setCriterion={value => setQueryParams({ ...queryParams, course: value })}
       />
       <SortButton
         order={queryParams.order}
-        setOrder={(value) => setQueryParam("order", value)}
+        setOrder={value => setQueryParams({ ...queryParams, order: value })}
         orderBy={queryParams.orderBy}
-        setOrderBy={(value) => setQueryParam("orderBy", value)}
+        setOrderBy={value => setQueryParams({ ...queryParams, orderBy: value })}
       />
     </Box>
   );
 };
 
-const Selections = ({ queryParams, setQueryParam }) => {
-  const isSortingApplied = !!queryParams.orderBy;
-  const isFilteringApplied = !!queryParams.type || !!queryParams.course;
+const Selections = () => {
+  const { queryParams } = useAssignmentContext();
 
-  return (isFilteringApplied || isSortingApplied) && (
-    <Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", flexWrap: "wrap", gap: 1, mt: 2 }}>
-      {isFilteringApplied && <FilteringSelections
-        queryParams={queryParams}
-        setQueryParam={setQueryParam}
-      />}
-      {isSortingApplied && <SortingSelections
-        queryParams={queryParams}
-        setQueryParam={setQueryParam}
-      />}
+  const sortingApplied = !!queryParams.orderBy;
+  const filteringApplied = !!(queryParams.type || queryParams.course);
+
+  // Selection chips are only displayed when necessary.
+  if (!filteringApplied && !sortingApplied) {
+    return null;
+  }
+
+  return (
+    <Box sx={{
+      display: "flex",
+      justifyContent: "end",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 1,
+      mt: 2,
+    }}>
+      {filteringApplied && <FilteringSelections/>}
+      {sortingApplied && <SortingSelections/>}
     </Box>
   );
 };
 
-const FilteringSelections = ({ queryParams, setQueryParam }) => {
-  const clearType = () => setQueryParam("type", null);
-  const clearCourse = () => setQueryParam("course", null);
+const FilteringSelections = () => {
+  const { queryParams, setQueryParams } = useAssignmentContext();
+  const clearType = () => setQueryParams({ ...queryParams, type: null });
+  const clearCourse = () => setQueryParams({ ...queryParams, course: null });
 
   return (
     <Box sx={{ display: "flex", gap: 1 }}>
@@ -119,7 +122,7 @@ const CourseChip = ({ code, ...rest }) => {
   />;
 };
 
-const filteringOptions = [
+const sortingOptions = [
   {
     label: "Title",
     value: "title",
@@ -142,17 +145,25 @@ const filteringOptions = [
   },
 ];
 
-const SortingSelections = ({ queryParams, setQueryParam }) => {
+const SortingSelections = () => {
+  const { queryParams, setQueryParams } = useAssignmentContext();
+  const clearOrderBy = () => setQueryParams({ ...queryParams, orderBy: null });
+
   return (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Typography variant="body2">Sorted by</Typography>
-      <Chip
-        size="small"
-        icon={queryParams.order === "asc" ? <ArrowUpwardOutlinedIcon/> : <ArrowDownwardOutlinedIcon/>}
-        label={filteringOptions.find(it => it.value === queryParams.orderBy).label}
-        onDelete={() => setQueryParam("orderBy", null)}/>
+      <SortChip order={queryParams.order} orderBy={queryParams.orderBy} onDelete={clearOrderBy}/>
     </Box>
   );
+};
+
+const SortChip = ({ order, orderBy, ...rest }) => {
+  return <Chip
+    size="small"
+    icon={order === "asc" ? <ArrowUpwardOutlinedIcon/> : <ArrowDownwardOutlinedIcon/>}
+    label={sortingOptions.find(it => it.value === orderBy).label}
+    {...rest}
+  />;
 };
 
 const NewButton = ({ onClick }) => {
@@ -189,7 +200,7 @@ const SortButton = ({ orderBy, setOrderBy, order, setOrder }) => {
 
     <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
       {/* ORDER BY */}
-      {filteringOptions.map(({ label, value, Icon }) => (
+      {sortingOptions.map(({ label, value, Icon }) => (
         <MenuItem key={label} selected={value === orderBy} onClick={() => handleCriterionClicked(value)}>
           <ListItemIcon>
             <Icon fontSize="small"/>

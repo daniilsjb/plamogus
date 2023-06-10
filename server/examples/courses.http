@@ -1,5 +1,5 @@
 ### Create a course
-POST {{uap-host}}/courses
+POST {{plamogus-host}}/courses
 Content-Type: application/json
 
 {
@@ -10,15 +10,15 @@ Content-Type: application/json
 }
 
 ### Read all courses
-GET {{uap-host}}/courses
+GET {{plamogus-host}}/courses
 Accept: application/json
 
 ### Read one course
-GET {{uap-host}}/courses/{id}
+GET {{plamogus-host}}/courses/{id}
 Accept: application/json
 
 ### Update a course
-PUT {{uap-host}}/courses/{id}
+PUT {{plamogus-host}}/courses/{id}
 Content-Type: application/json
 
 {
@@ -29,4 +29,4 @@ Content-Type: application/json
 }
 
 ### Delete a course
-DELETE {{uap-host}}/courses/{id}
+DELETE {{plamogus-host}}/courses/{id}

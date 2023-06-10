@@ -1,4 +1,6 @@
+import { useQuery } from "react-query";
 import { useTheme } from "@mui/material/styles";
+import { Navigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -26,10 +28,8 @@ import {
 
 import dayjs from "dayjs";
 
-import { useQuery } from "react-query";
 import { getDashboard } from "../../api/dashboard";
 import { ASSIGNMENT_TYPES } from "../../common/constants";
-import { Navigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { status, data } = useQuery({
@@ -38,15 +38,15 @@ const Dashboard = () => {
   });
 
   if (status === "loading") {
-    return <DashboardLoading/>;
+    return <Loading/>;
   } else if (status === "error") {
     return <Navigate to="/error"/>
   }
 
-  return (
-    <Grid container spacing={3}>
+  return <Box sx={{ display: "flex", height: "100%" }}>
+    <Grid container spacing={{ xs: 2, sm: 3 }}>
       {/* ROW 1 */}
-      <Grid item container xs={12} sm={12} md={12} lg={4} spacing={3}>
+      <Grid item container xs={12} sm={12} md={12} lg={4} spacing={2}>
         <Grid item xs={12} sm={6} lg={12}>
           <Paper sx={{
             display: "flex",
@@ -54,8 +54,8 @@ const Dashboard = () => {
             height: "100%",
             alignItems: "center",
             justifyContent: "center",
+            gap: { xs: 2, sm: 3 },
             p: 1,
-            gap: { xs: 1, sm: 2, md: 3 },
           }}>
             <PendingAssignments pending={data.pendingCount}/>
           </Paper>
@@ -67,8 +67,8 @@ const Dashboard = () => {
             height: "100%",
             alignItems: "center",
             justifyContent: "center",
+            gap: { xs: 2, sm: 3 },
             p: 1,
-            gap: { xs: 1, sm: 2, md: 3 },
           }}>
             <OverdueAssignments overdue={data.overdueCount}/>
           </Paper>
@@ -82,8 +82,8 @@ const Dashboard = () => {
           height: "100%",
           alignItems: "center",
           justifyContent: "center",
-          p: 3,
-          gap: { xs: 1, sm: 2, md: 3 },
+          gap: { xs: 2, sm: 3 },
+          p: 1,
         }}>
           <Typography variant="h5">Semester Insights</Typography>
           <SemesterDistribution data={data.semesters}/>
@@ -120,12 +120,18 @@ const Dashboard = () => {
         </Paper>
       </Grid>
     </Grid>
-  );
+  </Box>;
 };
 
-const DashboardLoading = () => {
+const Loading = () => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+    <Box sx={{
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
       <CircularProgress/>
       <Typography sx={{ mt: 3 }} variant="h6">Hold up a moment!</Typography>
       <Typography sx={{ mt: 1 }}>We are just loading your data...</Typography>
@@ -169,7 +175,6 @@ const OverdueAssignments = ({ overdue }) => {
 
 const TypeDistribution = ({ data }) => {
   const theme = useTheme();
-
   if (data.length < 2) {
     return <Typography>Not enough data. Add more assignments first!</Typography>;
   }
@@ -189,6 +194,11 @@ const TypeDistribution = ({ data }) => {
           labelFormatter={(value) => `Type: ${value}`}
           formatter={(value) => [value, "Total Count"]}
           separator=": "
+          cursor={false}
+          contentStyle={{
+            backgroundColor: theme.palette.background.default,
+            border: "none",
+        }}
         />
         <Bar dataKey="count" fill={theme.palette.primary.main}/>
         <Legend formatter={() => "Assignments"}/>
@@ -213,6 +223,10 @@ const SemesterDistribution = ({ data }) => {
           labelFormatter={(value) => `Semester: ${value}`}
           formatter={(value) => [value, "Assignments"]}
           separator=": "
+          contentStyle={{
+            backgroundColor: theme.palette.background.default,
+            border: "none",
+          }}
         />
         <Line type="monotone" dataKey="count" stroke={theme.palette.primary.main}/>
         <Legend formatter={() => "Assignments"}/>
@@ -240,11 +254,9 @@ const AssignmentDay = ({ data, day, outsideCurrentMonth, ...props }) => {
 const AssignmentCalendar = ({ data }) => {
   return (
     <DateCalendar
-      readOnly
       slots={{ day: AssignmentDay }}
-      slotProps={{
-        day: { data },
-      }}
+      slotProps={{ day: { data } }}
+      readOnly
     />
   );
 };

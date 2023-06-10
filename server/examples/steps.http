@@ -1,5 +1,5 @@
 ### Append a step to an assignment
-POST {{uap-host}}/assignments/{assignmentId}/steps
+POST {{plamogus-host}}/assignments/{assignmentId}/steps
 Content-Type: application/json
 
 {
@@ -7,11 +7,11 @@ Content-Type: application/json
 }
 
 ### Read all steps of an assignment
-GET {{uap-host}}/assignments/{assignmentId}/steps
+GET {{plamogus-host}}/assignments/{assignmentId}/steps
 Accept: application/json
 
 ### Update a step of an assignment
-PUT {{uap-host}}/steps/{id}
+PUT {{plamogus-host}}/steps/{id}
 Content-Type: application/json
 
 {
@@ -19,10 +19,10 @@ Content-Type: application/json
 }
 
 ### Delete a step from an assignment
-DELETE {{uap-host}}/steps/{id}
+DELETE {{plamogus-host}}/steps/{id}
 
 ### Mark a step of an assignment as completed
-PUT {{uap-host}}/steps/{id}/completion
+PUT {{plamogus-host}}/steps/{id}/completion
 
 ### Mark a step of an assignment as not completed
-DELETE {{uap-host}}/steps/{id}/completion
+DELETE {{plamogus-host}}/steps/{id}/completion

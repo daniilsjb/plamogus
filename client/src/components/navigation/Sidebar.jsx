@@ -1,5 +1,5 @@
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useMediaQuery, useTheme } from "@mui/material";
 
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
@@ -13,53 +13,63 @@ import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlined";
 
-const Sidebar = ({ open, setOpen }) => {
-  const { breakpoints, width } = useTheme();
-  const isTemporary = useMediaQuery(breakpoints.down("md"));
+import { useResponsiveQuery } from "../../theme";
+import { useTheme } from "@mui/material";
 
-  const handleNavigationClick = () => {
-    if (isTemporary) setOpen(false);
+const Sidebar = ({ open, setOpen }) => {
+  const theme = useTheme();
+  const { isSidebarTemporary } = useResponsiveQuery();
+
+  // Automatically collapse sidebar when it becomes temporary.
+  useEffect(() => {
+    if (isSidebarTemporary) setOpen(false);
+  }, [isSidebarTemporary, setOpen]);
+
+  const handleClick = () => {
+    if (isSidebarTemporary) setOpen(false);
   };
 
   return (
     <Drawer
       open={open}
       onClose={() => setOpen(false)}
-      variant={isTemporary ? "temporary" : "persistent"}
+      variant={isSidebarTemporary ? "temporary" : "persistent"}
       PaperProps={{
         elevation: 1,
         sx: {
-          width: width.navigationDrawer,
-          boxSizing: "border-box",
+          width: theme.width.navigationDrawer,
         },
       }}
     >
       <Toolbar/>
       <Box sx={{ overflow: "auto" }}>
         <List>
-          <NavigationEntry
-            icon={<SpaceDashboardOutlinedIcon/>}
-            title={"Dashboard"}
-            route={"/dashboard"}
-            onClick={handleNavigationClick}
-          />
-          <NavigationEntry
-            icon={<AssignmentOutlinedIcon/>}
-            title={"Assignments"}
-            route={"/assignments"}
-            onClick={handleNavigationClick}
-          />
-          <NavigationEntry
-            icon={<SchoolOutlinedIcon/>}
-            title={"Courses"}
-            route={"/courses"}
-            onClick={handleNavigationClick}
-          />
+          {navigationEntries.map((entry, idx) => (
+            <NavigationEntry key={idx} onClick={handleClick} {...entry}/>
+          ))}
         </List>
       </Box>
     </Drawer>
   );
 };
+
+const navigationEntries = [
+  {
+    title: "Dashboard",
+    route: "/dashboard",
+    icon: <SpaceDashboardOutlinedIcon/>,
+  },
+  {
+    title: "Assignments",
+    route: "/assignments",
+    icon: <AssignmentOutlinedIcon/>,
+  },
+  {
+    title: "Courses",
+    route: "/courses",
+    icon: <SchoolOutlinedIcon/>,
+  },
+];
 
 const NavigationEntry = ({ icon, title, route, ...rest }) => {
   const { pathname } = useLocation();

@@ -11,11 +11,6 @@ const FormikLiveDatePicker = ({ field, form, ...props }) => {
 
   return (
     <DatePicker
-      slotProps={{
-        actionBar: {
-          actions: ["clear"],
-        },
-      }}
       name={name}
       value={value}
       onChange={handleChange}

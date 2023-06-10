@@ -70,7 +70,7 @@ const AssignmentAttributes = ({ assignment }) => {
   // Avoid creating redundant wrappers if there aren't any chips to display.
   // Otherwise, the vertical centering of the card's title gets shifted.
   return (assignment.type || assignment.deadlineTime || assignment.course) && (
-    <Box sx={{ display: "flex", gap: 1 }}>
+    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", }}>
       {assignment.type && <TypeChip assignment={assignment}/>}
       {assignment.course && <CourseChip assignment={assignment}/>}
       {assignment.deadlineTime && <DeadlineChip assignment={assignment}/>}

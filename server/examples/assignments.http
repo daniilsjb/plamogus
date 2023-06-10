@@ -1,6 +1,6 @@
 ### Create a new assignment
 
-POST {{uap-host}}/assignments
+POST {{plamogus-host}}/assignments
 Content-Type: application/json
 
 {
@@ -12,15 +12,15 @@ Content-Type: application/json
 }
 
 ### Read all assignments
-GET {{uap-host}}/assignments
+GET {{plamogus-host}}/assignments
 Accept: application/json
 
 ### Read one assignment
-GET {{uap-host}}/assignments/{id}
+GET {{plamogus-host}}/assignments/{id}
 Accept: application/json
 
 ### Update an assignment
-PUT {{uap-host}}/assignments/{id}
+PUT {{plamogus-host}}/assignments/{id}
 Content-Type: application/json
 
 {
@@ -32,10 +32,10 @@ Content-Type: application/json
 }
 
 ### Delete an assignment
-DELETE {{uap-host}}/assignments/{id}
+DELETE {{plamogus-host}}/assignments/{id}
 
 ### Mark an assignment as completed
-PUT {{uap-host}}/assignments/{id}/completion
+PUT {{plamogus-host}}/assignments/{id}/completion
 
 ### Mark an assignment as not completed
-DELETE {{uap-host}}/assignments/{id}/completion
+DELETE {{plamogus-host}}/assignments/{id}/completion

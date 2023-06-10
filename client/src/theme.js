@@ -1,5 +1,5 @@
-import { createContext, useMemo, useState } from "react";
-import { createTheme } from "@mui/material";
+import { createContext, useEffect, useMemo, useState } from "react";
+import { createTheme, useMediaQuery } from "@mui/material";
 
 export const ColorModeContext = createContext({
   toggleColorMode: () => {
@@ -13,11 +13,19 @@ export const ColorModeContext = createContext({
 
 export const useColorMode = () => {
   const [mode, setMode] = useState("light");
+  useEffect(() => {
+    if (localStorage.getItem("colorMode")) {
+      setMode(localStorage.getItem("colorMode"));
+    }
+  }, []);
+
   const colorMode = useMemo(() => ({
     toggleColorMode: () => {
-      setMode(prevState => (prevState === "dark") ? "light" : "dark");
+      const newMode = (mode === "dark") ? "light" : "dark";
+      localStorage.setItem("colorMode", newMode);
+      setMode(newMode);
     },
-  }), []);
+  }), [mode]);
 
   const theme = useMemo(() => createTheme({
     palette: {
@@ -42,4 +50,9 @@ export const useColorMode = () => {
   }), [mode]);
 
   return [theme, colorMode];
+};
+
+export const useResponsiveQuery = () => {
+  const isSidebarTemporary = useMediaQuery(theme => theme.breakpoints.down("lg"));
+  return { isSidebarTemporary };
 };

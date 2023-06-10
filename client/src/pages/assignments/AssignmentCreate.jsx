@@ -1,5 +1,4 @@
 import { useQuery } from "react-query";
-import { useMediaQuery, useTheme } from "@mui/material";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -8,27 +7,35 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, useFormikContext } from "formik";
 import FormikTextField from "../../components/forms/FormikTextField";
 import FormikDatePicker from "../../components/forms/FormikDatePicker";
 import FormikSelect from "../../components/forms/FormikSelect";
 
-import { findAllCourses } from "../../api/course";
-import { useAssignmentCreation } from "../../mutations/assignment";
-import { ASSIGNMENT_TYPES } from "../../common/constants";
 import assignmentSchema from "../../schemas/assignment";
+import { ASSIGNMENT_TYPES } from "../../common/constants";
+import { useAssignmentCreation } from "../../mutations/assignment";
+import { useAssignmentContext } from "./AssignmentContext";
+import { findAllCourses } from "../../api/course";
+import { useResponsiveQuery } from "../../theme";
 
-const AssignmentCreate = ({ close }) => {
-  const theme = useTheme();
-  const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
+const AssignmentCreate = () => {
+  const creation = useAssignmentCreation();
+  const { handleClear } = useAssignmentContext();
+  const { isSidebarTemporary } = useResponsiveQuery();
 
-  const { data } = useQuery({
-    queryKey: ["courses"],
-    queryFn: () => findAllCourses({}),
-    placeholderData: [],
-  });
+  const handleSubmit = async (values, form) => {
+    const request = assignmentSchema.cast(values);
+    await creation.mutateAsync(request);
+    onSubmissionSuccess(form);
+  };
 
-  const create = useAssignmentCreation();
+  const onSubmissionSuccess = (form) => {
+    form.resetForm();
+    if (isSidebarTemporary) {
+      handleClear();
+    }
+  };
 
   const initialValues = {
     title: "",
@@ -38,85 +45,92 @@ const AssignmentCreate = ({ close }) => {
     type: "",
   };
 
-  const handleSubmit = async (values, formik) => {
-    const request = assignmentSchema.cast(values);
-    await create.mutateAsync(request);
-    formik.resetForm();
-    if (isSidebarTemporary) {
-      close();
-    }
-  };
-
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={assignmentSchema}>
-      {(formik) => (
-        <Form style={{ height: "100%" }}>
-          <Box sx={{ display: "flex", flexDirection: "column", height: "100%", gap: 1 }}>
-            <Field
-              variant="filled"
-              component={FormikTextField}
-              name="title"
-              label="Title"
-              type="text"
-              autoComplete="off"
-              required
-            />
-
-            <FormControl variant="filled">
-              <InputLabel>Type</InputLabel>
-              <Field name="type" component={FormikSelect}>
-                <MenuItem value=""><em>None</em></MenuItem>
-                {ASSIGNMENT_TYPES.map(({ value, label }) => (
-                  <MenuItem key={value} value={value}>{label}</MenuItem>
-                ))}
-              </Field>
-            </FormControl>
-
-            <FormControl variant="filled">
-              <InputLabel>Course</InputLabel>
-              <Field name="courseId" component={FormikSelect}>
-                <MenuItem value=""><em>None</em></MenuItem>
-                {data.map(({ id, code }) => (
-                  <MenuItem key={id} value={id}>{code}</MenuItem>
-                ))}
-              </Field>
-            </FormControl>
-
-            <Field
-              component={FormikDatePicker}
-              name="deadlineTime"
-              label="Deadline Date"
-              slotProps={{
-                textField: {
-                  readOnly: true,
-                  variant: "filled",
-                },
-                actionBar: {
-                  actions: ["clear"],
-                },
-              }}
-            />
-
-            <Field
-              component={FormikTextField}
-              variant="filled"
-              name="description"
-              label="Description"
-              type="text"
-              multiline
-              rows={8}
-              sx={{ flexGrow: 1 }}
-            />
-
-            <Divider/>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-              <Button variant="contained" type="submit" disabled={!(formik.dirty && formik.isValid)}>Save</Button>
-              <Button variant="outlined" sx={{ ml: 1 }} onClick={close} color="error">Cancel</Button>
-            </Box>
-          </Box>
-        </Form>
-      )}
+      <Form style={{ height: "100%" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <Fields/>
+          <Divider/>
+          <Footer/>
+        </Box>
+      </Form>
     </Formik>
+  );
+};
+
+const Fields = () => {
+  const { data } = useQuery({
+    queryKey: ["courses"],
+    queryFn: () => findAllCourses({}),
+    placeholderData: [],
+  });
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="title"
+        label="Title"
+        autoComplete="off"
+        required
+      />
+
+      <FormControl variant="filled">
+        <InputLabel>Type</InputLabel>
+        <Field name="type" component={FormikSelect}>
+          <MenuItem value=""><em>None</em></MenuItem>
+          {ASSIGNMENT_TYPES.map(({ value, label }) => (
+            <MenuItem key={value} value={value}>{label}</MenuItem>
+          ))}
+        </Field>
+      </FormControl>
+
+      <FormControl variant="filled">
+        <InputLabel>Course</InputLabel>
+        <Field name="courseId" component={FormikSelect}>
+          <MenuItem value=""><em>None</em></MenuItem>
+          {data.map(({ id, code }) => (
+            <MenuItem key={id} value={id}>{code}</MenuItem>
+          ))}
+        </Field>
+      </FormControl>
+
+      <Field
+        component={FormikDatePicker}
+        name="deadlineTime"
+        label="Deadline Date"
+        slotProps={{
+          textField: {
+            readOnly: true,
+            variant: "filled",
+          },
+          actionBar: {
+            actions: ["clear"],
+          },
+        }}
+      />
+
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="description"
+        label="Description"
+        multiline
+        rows={8}
+      />
+    </Box>
+  );
+};
+
+const Footer = () => {
+  const { handleClear } = useAssignmentContext();
+  const { dirty, isValid } = useFormikContext();
+  return (
+    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+      <Button variant="outlined" onClick={handleClear} size="small">Cancel</Button>
+      <Button variant="contained" type="submit" disabled={!dirty || !isValid} size="small">Save</Button>
+    </Box>
   );
 };
 

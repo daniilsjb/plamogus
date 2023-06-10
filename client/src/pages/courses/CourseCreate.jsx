@@ -1,100 +1,124 @@
-import { useMediaQuery, useTheme } from "@mui/material";
-
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, useFormikContext } from "formik";
+import { HttpStatusCode } from "axios";
+
+import courseSchema from "../../schemas/course";
+import { useCourseCreation } from "../../mutations/course";
+import { useCourseContext } from "./CourseContext";
+
+import { useResponsiveQuery } from "../../theme";
+import { removeNewlines, removeNonDigits } from "../../common/string";
 import FormikTextField from "../../components/forms/FormikTextField";
 
-import { useCourseCreation } from "../../mutations/course";
-import { removeNewlines, removeNonDigits } from "../../common/string";
-import courseSchema from "../../schemas/course";
-
-const CourseCreate = ({ close }) => {
-  const theme = useTheme();
-  const isSidebarTemporary = useMediaQuery(theme.breakpoints.down("md"));
-
+const CourseCreate = () => {
   const creation = useCourseCreation();
-  const initialValues = {
-    code: "", title: "", semester: "", description: "",
-  };
+  const { handleClear } = useCourseContext();
+  const { isSidebarTemporary } = useResponsiveQuery();
 
-  const handleSubmit = async (values, formik) => {
+  const handleSubmit = async (values, form) => {
     const request = courseSchema.cast(values);
     try {
       await creation.mutateAsync(request);
-      formik.resetForm();
-      if (isSidebarTemporary) {
-        close();
-      }
+      onSubmissionSuccess(form);
     } catch (error) {
-      if (error.response?.status === 409) {
-        formik.setFieldError("code", "A course with this code already exists.");
-      }
+      onSubmissionFailure(form, error);
     }
+  };
+
+  const onSubmissionSuccess = (form) => {
+    form.resetForm();
+    if (isSidebarTemporary) {
+      handleClear();
+    }
+  };
+
+  const onSubmissionFailure = (formik, error) => {
+    // The web API could be improved by returning a more descriptive response containing
+    // information about which field exactly is causing the issue, but within the current
+    // scope it can be simply assumed that any conflict is caused by codes.
+    if (error.response?.status === HttpStatusCode.Conflict) {
+      formik.setFieldError("code", "A course with this code already exists.");
+    }
+  };
+
+  const initialValues = {
+    code: "",
+    title: "",
+    semester: "",
+    description: "",
   };
 
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={courseSchema}>
-      {(formik) => (
-        <Form style={{ height: "100%" }}>
-          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flexGrow: 1, overflow: "auto" }}>
-              <Field
-                variant="filled"
-                component={FormikTextField}
-                name="code"
-                label="Code"
-                type="text"
-                placeholder="e.g., CS101"
-                autoComplete="off"
-                required
-              />
-
-              <Field
-                variant="filled"
-                component={FormikTextField}
-                name="title"
-                label="Title"
-                type="text"
-                placeholder="e.g., Introduction to Computer Science"
-                required
-                multiline
-                onChange={e => formik.setFieldValue("title", removeNewlines(e.target.value))}
-              />
-
-              <Field
-                variant="filled"
-                component={FormikTextField}
-                name="semester"
-                label="Semester"
-                type="text"
-                placeholder="e.g., 1"
-                onChange={e => formik.setFieldValue("semester", removeNonDigits(e.target.value))}
-              />
-
-              <Field
-                component={FormikTextField}
-                variant="filled"
-                name="description"
-                label="Description"
-                type="text"
-                multiline
-                rows={8}
-                sx={{ flexGrow: 1 }}
-              />
-            </Box>
-
-            <Divider/>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-              <Button variant="contained" type="submit" disabled={!(formik.dirty && formik.isValid)}>Save</Button>
-              <Button variant="outlined" sx={{ ml: 1 }} onClick={close} color="error">Cancel</Button>
-            </Box>
-          </Box>
-        </Form>
-      )}
+      <Form style={{ height: "100%" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <Fields/>
+          <Divider/>
+          <Footer/>
+        </Box>
+      </Form>
     </Formik>
+  );
+};
+
+const Fields = () => {
+  const { setFieldValue } = useFormikContext();
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="code"
+        label="Code"
+        placeholder="CS101"
+        autoComplete="off"
+        required
+      />
+
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="title"
+        label="Title"
+        placeholder="Introduction to Computer Science"
+        required
+        multiline
+        onChange={e => setFieldValue("title", removeNewlines(e.target.value))}
+      />
+
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="semester"
+        label="Semester"
+        placeholder="1"
+        autoComplete="off"
+        onChange={e => setFieldValue("semester", removeNonDigits(e.target.value))}
+      />
+
+      <Field
+        component={FormikTextField}
+        variant="filled"
+        name="description"
+        label="Description"
+        multiline
+        rows={8}
+      />
+    </Box>
+  );
+};
+
+const Footer = () => {
+  const { handleClear } = useCourseContext();
+  const { dirty, isValid } = useFormikContext();
+  return (
+    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+      <Button variant="outlined" onClick={handleClear} size="small">Cancel</Button>
+      <Button variant="contained" type="submit" disabled={!dirty || !isValid} size="small">Save</Button>
+    </Box>
   );
 };
 

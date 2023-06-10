@@ -1,12 +1,62 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
+import { Navigate } from "react-router-dom";
+
+import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import AssignmentOverview from "./AssignmentOverview";
 import AssignmentCreate from "./AssignmentCreate";
 import AssignmentUpdate from "./AssignmentUpdate";
 import DetailsSidebar from "../../components/DetailsSidebar";
 
+import { findAllAssignments } from "../../api/assignment";
+import { AssignmentContext, useAssignmentContext } from "./AssignmentContext";
+
 const Assignments = () => {
+  const [queryParams, setQueryParams] = useState({ order: "asc" });
+  const { status, data } = useAssignmentsQuery({ queryParams });
+
+  if (status === "error") {
+    return <Navigate to="/error"/>;
+  } else if (status === "loading") {
+    return <Loading/>;
+  } else {
+    return <Content
+      data={data}
+      queryParams={queryParams}
+      setQueryParams={setQueryParams}
+    />;
+  }
+};
+
+const useAssignmentsQuery = ({ queryParams }) => {
+  return useQuery({
+    queryKey: ["assignments", queryParams],
+    queryFn: () => findAllAssignments(queryParams),
+    keepPreviousData: true,
+  });
+};
+
+const Loading = () => {
+  return (
+    <Box sx={{
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
+      <CircularProgress/>
+      <Typography sx={{ mt: 3 }} variant="h6">Hold up a moment!</Typography>
+      <Typography sx={{ mt: 1 }}>We are just loading your assignments...</Typography>
+    </Box>
+  );
+};
+
+const Content = ({ data, queryParams, setQueryParams }) => {
   // The details sidebar will contain different contents depending on which action
   // the user is currently trying to perform (e.g., create or update an assignment).
   const [selectedAction, setSelectedAction] = useState(null);
@@ -22,37 +72,38 @@ const Assignments = () => {
     setSelectedAssignment(assignment);
   };
 
-  const handleClose = () => {
+  const handleClear = () => {
     setSelectedAction(null);
     setSelectedAssignment(null);
   };
 
-  return <>
-    <AssignmentOverview
-      handleCreate={handleCreate}
-      handleSelect={handleSelect}
-      detailsOpen={!!selectedAction}
-      selectedAssignment={selectedAssignment}
-    />
+  const context = {
+    queryParams,
+    setQueryParams,
+    selectedAction,
+    selectedAssignment,
+    handleCreate,
+    handleSelect,
+    handleClear,
+  };
 
-    <AssignmentDetails
-      onClose={handleClose}
-      selectedAction={selectedAction}
-      selectedAssignment={selectedAssignment}
-    />
-  </>;
+  return (
+    <AssignmentContext.Provider value={context}>
+      <Box sx={{ display: "flex", height: "100%" }}>
+        <AssignmentOverview data={data}/>
+        <AssignmentDetails/>
+      </Box>
+    </AssignmentContext.Provider>
+  );
 };
 
-const AssignmentDetails = ({
-  onClose,
-  selectedAction,
-  selectedAssignment,
-}) => {
+const AssignmentDetails = () => {
+  const { selectedAction, handleClear } = useAssignmentContext();
   return (
-    <DetailsSidebar open={!!selectedAction} onClose={onClose}>
+    <DetailsSidebar open={!!selectedAction} onClose={handleClear}>
       <Toolbar/>
-      {selectedAction === "create" && <AssignmentCreate close={onClose}/>}
-      {selectedAction === "update" && <AssignmentUpdate close={onClose} assignment={selectedAssignment}/>}
+      {selectedAction === "create" && <AssignmentCreate/>}
+      {selectedAction === "update" && <AssignmentUpdate/>}
     </DetailsSidebar>
   );
 };

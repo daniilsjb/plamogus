@@ -9,7 +9,6 @@ export default yup.object().shape({
 
   description: yup.string()
     .trim()
-    .transform(it => it.replace(/\s+/g, ' '))
     .max(512, "Must be at most 512 characters long."),
 
   type: yup.string()

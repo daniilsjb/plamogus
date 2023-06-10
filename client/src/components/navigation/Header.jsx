@@ -13,7 +13,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 
 import { ColorModeContext } from "../../theme";
 
-const Header = ({ setNavigationOpen }) => {
+const Header = ({ toggleNavbar }) => {
   const theme = useTheme();
   const { toggleColorMode } = useContext(ColorModeContext);
 
@@ -21,16 +21,16 @@ const Header = ({ setNavigationOpen }) => {
     // The appbar is part of the normal flow, but displayed on top of the sidebar.
     <AppBar position="relative" sx={{ zIndex: theme => theme.zIndex.drawer + 100 }}>
       <Toolbar>
-        {/* NAVIGATION COLLAPSE */}
-        <Tooltip title="Collapse Navigation">
-          <IconButton onClick={() => setNavigationOpen(prevState => !prevState)} color="inherit" sx={{ mr: 2 }}>
+        {/* NAVIGATION TOGGLE */}
+        <Tooltip title="Toggle Navigation">
+          <IconButton onClick={toggleNavbar} color="inherit" sx={{ mr: 2 }}>
             <MenuOutlinedIcon/>
           </IconButton>
         </Tooltip>
 
         {/* BRANDING */}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          University Assignment Planner
+          Plamogus
         </Typography>
 
         {/* ICONS */}

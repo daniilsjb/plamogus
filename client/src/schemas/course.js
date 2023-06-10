@@ -18,10 +18,10 @@ export default yup.object().shape({
     .default(null)
     .transform(it => it === Number(it) ? it : null)
     .integer("Must be an integer value.")
-    .min(1, "Must be positive and non-zero."),
+    .min(1, "Must be positive and non-zero.")
+    .max(99, "Cannot be larger than 99."),
 
   description: yup.string()
     .trim()
-    .transform(it => it.replace(/\s+/g, ' '))
     .max(1024, "Must be at most 1024 characters long."),
 });
