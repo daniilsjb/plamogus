@@ -112,8 +112,8 @@ cd server
 
 ### Starting the Client
 
-Before running the client, ensure that the server has started successfully. The frontend may also be started from
-IntellIJ IDEA, or using the following commands in a terminal:
+Before running the client, ensure that the server has started successfully. The `client` project may also be started
+from IntelliJ IDEA, or using the following commands in a terminal:
 
 ```sh
 cd client
