@@ -1,4 +1,4 @@
-# University Assignment Planner
+# Plamogus
 
 A small and simple university assignment planner for students! 🎓
 
@@ -11,76 +11,83 @@ A small and simple university assignment planner for students! 🎓
 - RESTful API and PostgreSQL database.
 - [Spring Boot][spring-boot] backend with [JPA][jpa] and [Lombok][lombok].
 - [React][react] frontend for web browsers with [React Router][react-router].
-- UI and UX based on Google's [Material Design][material] ([MUI][mui]).
+- Responsive UI and UX based on Google's [Material Design][material] ([MUI][mui]).
 - Form management and validation using [Formik][formik] and [Yup][yup].
 - Querying using [React Query][react-query] and [Axios][axios].
 - Dashboard with [Recharts][recharts] components.
 - Calendars and date pickers, with  [day.js][dayjs] time operations.
 - Support for dark and light themes.
 
-## Building and Running
+## Building
 
-If you wish to build and run this project locally, you will need to start up the database, backend, and frontend of the
-application yourself. There are several options for achieving this, which are listed below.
+To run this project locally, you will need to start up the database, backend, and frontend of the application.
 
-### 1. Starting the Database
+### Prerequisites
 
-This project uses PostgreSQL database management system. For local building and development, you have two choices for
-starting it up: using Docker or by manually installing and running the DBMS on your machine.
+There are several options for building this project, but ultimately you will most likely need the following:
+
+- [Docker][1] or a local installation of [PostgreSQL][2]
+- Java 17 SDK
+- [npm][3]
+
+You may perform all of the steps using a terminal, or use an IDE such as [IntelliJ IDEA][4], which works for both Spring
+and React projects. If you don't have Docker installed, you may wish to consider using [Docker Desktop][5], which comes
+with all necessary software and a graphical user interface.
+
+### Starting the Database
+
+This project uses PostgreSQL database management system. To run the application, you can either start a database server
+using Docker or by manually running the DBMS on your machine.
 
 #### Using Docker (Recommended)
 
-If you have [Docker][1] installed, you may simply run the official [`postgres`][2] Docker image in a container. If you
-do not have Docker on your system, consider installing [Docker Desktop][3], which provides all necessary software along
-with a graphical user interface.
-
 The simplest way to start the database container is via the provided [`docker-compose.yml`](./server/docker-compose.yml)
-configuration file. This will take care of pulling the necessary image and setting up the environment variables, exposed
-port, etc. Assuming you are in the root of the repository, simply run the following:
+configuration file. Assuming you are in the root of the repository, simply run the following:
 
 ```sh
 cd server
 docker-compose up
 ```
 
-Alternatively, you may run the Docker container manually using the following command:
+This will take care of pulling the necessary image and setting up the environment variables, exposed ports, etc.
+Alternatively, you may explicitly run the equivalent Docker command yourself:
 
 ```sh
 docker run -d \
-  --name uap_db \
-  -e POSTGRES_DB=uap \
-  -e POSTGRES_USER=uap_user \
-  -e POSTGRES_PASSWORD=uap_user \
+  --name plamogus_db \
+  -e POSTGRES_DB=plamogus \
+  -e POSTGRES_USER=plamogus_user \
+  -e POSTGRES_PASSWORD=plamogus_user \
   -p 5432:5432 \
   postgres
 ```
 
 #### Manually
 
-If for some reason you do not want to use Docker, you may [download the PostgreSQL package][4] and start up the database
-server yourself. Keep in mind that the application will try to access the database with the following settings
-(applicable to local environments _only_):
+Create a new database server using the PostgreSQL package and configure it with the following settings (applicable to
+local environments only):
 
-| Setting       | Value         |
-| ------------- | ------------- |
-| Database Name | `uap`         |
-| Username      | `uap_user`    |
-| Password      | `uap_user`    |
-| Host          | `localhost`   |
-| Port          | `5432`        |
+| Setting       | Value           |
+| ------------- | --------------- |
+| Database Name | `plamogus`      |
+| Username      | `plamogus_user` |
+| Password      | `plamogus_user` |
+| Host          | `localhost`     |
+| Port          | `5432`          |
 
-### 2. Starting the Server
+### Starting the Server
 
-Once you have the database up and running, you may build and start the backend of the application. The project is using
-Maven as its build system, but you do not need to have it available on your system - instead, you may use the Maven
-Wrapper provided by the Spring Boot project.
+Before running the server, ensure that the database has started successfully.
 
-#### Using IntelliJ IDEA
+#### Using IntelliJ IDEA (Recommended)
 
-If you are using  [IntelliJ IDEA][5] by JetBrains, simply open the `server` project in the IDE and run it. If you do not
-have a suitable Java 17 SDK, you may [download one directly from the IDE][6] (such as the Amazon Corretto version of
-OpenJDK) and use it within the project. To verify that the server has started correctly, you may try running samples
-from the [`examples`](./server/examples/) folder using [IntelliJ's built-in HTTP client][7].
+Simply open the `server` project in the IDE and run it - IntelliJ will automatically take care of dependencies, etc.
+If you do not have a suitable Java 17 SDK, you may [download one directly from the IDE][6] (such as the Amazon Corretto
+version of OpenJDK).
+
+To verify that the server has started correctly, you may try running samples from the [`examples`](./server/examples/)
+folder using [IntelliJ's built-in HTTP client][7] after selecting the `local` environment profile. Don't forget to
+replace `{id}` with the actual identifiers when making requests!
 
 #### Using Terminal
 
@@ -103,14 +110,10 @@ cd server
 ./mvnw spring-boot:run
 ```
 
-At this point, the backend should be up and listening on port `8080`. You may verify this by making a request to any of
-its endpoints (such as `GET localhost:8080/api/v1/assignments`), which should return an empty response.
+### Starting the Client
 
-### 3. Starting the Client
-
-Lastly, you may build and run the frontend of the application. It is an [`npm`][8]-based project configured using the
-[Create React App][9] tool. Note that you may run the project from IntelliJ IDEA, or start it from the terminal using
-the following commands:
+Before running the client, ensure that the server has started successfully. The frontend may also be started from
+IntellIJ IDEA, or using the following commands in a terminal:
 
 ```sh
 cd client
@@ -140,11 +143,9 @@ At this point, the entire application stack should be up and running. Open up yo
 
 <!-- Build references. -->
 [1]: https://www.docker.com/
-[2]: https://hub.docker.com/_/postgres
-[3]: https://www.docker.com/products/docker-desktop/
-[4]: https://www.postgresql.org/download/
-[5]: https://www.jetbrains.com/idea/
+[2]: https://www.postgresql.org/download/
+[3]: https://www.npmjs.com/
+[4]: https://www.jetbrains.com/idea/
+[5]: https://www.docker.com/products/docker-desktop/
 [6]: https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk
 [7]: https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html
-[8]: https://www.npmjs.com/
-[9]: https://create-react-app.dev/
